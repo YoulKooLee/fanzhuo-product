@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Axhub 工作台 · 架构总览</title>
+<style>
+  /* ===== 基础 ===== */
+  *,*::before,*::after { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #f4f5fa;
+    font-family: "PingFang SC","Microsoft YaHei","Hiragino Sans GB",Helvetica,Arial,sans-serif;
+    color: #1f2937;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    padding: 28px 32px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .page {
+    width: 1680px;
+    max-width: 100%;
+    background: #ffffff;
+    border: 1px solid #d8dce5;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(15,23,42,.06);
+    padding: 28px 30px 30px;
+  }
+  h1.title {
+    margin: 0 0 4px;
+    font-size: 24px;
+    color: #1c2540;
+    letter-spacing: .4px;
+  }
+  .sub {
+    margin: 0 0 22px;
+    font-size: 13px;
+    color: #6b7280;
+  }
+  .sub b { color: #4b5563; font-weight: 600; }
+
+  /* ===== 通用卡片 ===== */
+  .panel {
+    border-radius: 10px;
+    padding: 14px 16px;
+    border: 1px solid transparent;
+  }
+  .panel-title {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .panel-title small {
+    font-size: 11px;
+    color: rgba(0,0,0,.45);
+    font-weight: 500;
+  }
+  .panel-desc {
+    font-size: 11.5px;
+    color: rgba(0,0,0,.55);
+    line-height: 1.5;
+    margin: -4px 0 10px;
+  }
+
+  /* ===== 颜色主题 ===== */
+  .c-user      { background:#e8f3ee; border-color:#b7d8c8; }
+  .c-brain     { background:#ece4fa; border-color:#c8b5ee; }
+  .c-tools     { background:#e3edfa; border-color:#aac1ee; }
+  .c-runtime   { background:#dff3e2; border-color:#a3d3ad; }
+  .c-data      { background:#fdebd2; border-color:#e9c189; }
+  .c-store     { background:#f6e7e7; border-color:#e0bdbd; }
+  .c-guard     { background:#fde6ec; border-color:#e8b6c5; }
+  .c-infra     { background:#e9ecf1; border-color:#c1c7d3; }
+
+  .c-user .panel-title    { color:#1f6c4a; }
+  .c-brain .panel-title   { color:#5d3fa1; }
+  .c-tools .panel-title   { color:#2f5fa6; }
+  .c-runtime .panel-title { color:#1f7d3a; }
+  .c-data .panel-title    { color:#a35c14; }
+  .c-store .panel-title   { color:#a83b3b; }
+  .c-guard .panel-title   { color:#b03060; }
+  .c-infra .panel-title   { color:#3a4251; }
+
+  /* ===== 顶部三栏 ===== */
+  .top-row {
+    display: grid;
+    grid-template-columns: 220px 1fr 220px;
+    gap: 16px;
+    align-items: stretch;
+    margin-bottom: 12px;
+  }
+  .user-col .item, .guard-col .item {
+    background: rgba(255,255,255,.7);
+    border: 1px dashed rgba(0,0,0,.18);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+  .user-col .item b, .guard-col .item b {
+    display: block;
+    font-size: 12.5px;
+    color: #111827;
+    margin-bottom: 2px;
+  }
+  .user-col .item span, .guard-col .item span {
+    color: rgba(0,0,0,.55);
+  }
+
+  /* 工作台控制层 - 5 个步骤 */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+  .step {
+    background: #fff;
+    border: 1px solid #c8b5ee;
+    border-radius: 8px;
+    padding: 10px 12px;
+    position: relative;
+  }
+  .step .num {
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    background: #6e52d6;
+    color: #fff;
+    border-radius: 50%;
+    width: 22px; height: 22px;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center; justify-content: center;
+  }
+  .step h4 {
+    margin: 4px 0 4px;
+    font-size: 13px;
+    color: #4a3191;
+    line-height: 1.3;
+  }
+  .step p {
+    margin: 0;
+    font-size: 11px;
+    color: #5f557a;
+    line-height: 1.45;
+  }
+
+  /* 执行控制器腰带 */
+  .belt {
+    background: #faf7ff;
+    border: 1px solid #d6c8f1;
+    border-radius: 8px;
+    padding: 8px 14px;
+    margin: 10px 0 12px;
+    font-size: 12px;
+    color: #4a3191;
+    display: flex;
+    gap: 18px;
+    align-items: center;
+  }
+  .belt b { color:#6e52d6; }
+  .belt .dot { width:6px; height:6px; border-radius:50%; background:#6e52d6; display:inline-block; margin-right:4px; }
+
+  /* 启动时间轴 */
+  .timeline-wrap {
+    background:#fff;
+    border:1px solid #d6c8f1;
+    border-radius:10px;
+    padding: 12px 16px 8px;
+    margin-bottom: 14px;
+  }
+  .timeline-wrap .panel-title{
+    color:#4a3191;
+    margin-bottom:6px;
+  }
+  .timeline {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 8px;
+    position: relative;
+  }
+  .tl-step {
+    background:#ece4fa;
+    border: 1px solid #c8b5ee;
+    border-radius:6px;
+    padding: 8px 8px 6px;
+    text-align:center;
+    font-size:11.5px;
+    color:#3f2d77;
+    position: relative;
+  }
+  .tl-step b {
+    display:block;
+    font-size:11px;
+    color:#5d3fa1;
+    margin-bottom:2px;
+  }
+  .tl-step span {
+    font-size:10px;
+    color:#5f557a;
+  }
+
+  /* 中层三栏 */
+  .middle-row {
+    display: grid;
+    grid-template-columns: 320px 1fr 380px;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .tool-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .tool {
+    background: #fff;
+    border: 1px solid #aac1ee;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 11.5px;
+  }
+  .tool b { color:#2f5fa6; display:block; margin-bottom:1px; font-size:12px; }
+  .tool span { color:#4b5563; font-size:10.5px; }
+
+  /* 服务层 */
+  .svc-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .svc {
+    background:#fff;
+    border:1px solid #a3d3ad;
+    border-radius:8px;
+    padding:10px 12px;
+    font-size:11.5px;
+  }
+  .svc h5 {
+    margin:0 0 6px;
+    font-size:13px;
+    color:#1f7d3a;
+  }
+  .svc .pill {
+    display:inline-block;
+    background:#dff3e2;
+    color:#1f7d3a;
+    border-radius:10px;
+    padding:1px 8px;
+    font-size:10.5px;
+    margin-right:4px;
+    border:1px solid #a3d3ad;
+  }
+  .svc ul {
+    list-style: none;
+    padding: 0; margin: 4px 0 0;
+  }
+  .svc li {
+    padding: 2px 0;
+    color: #374151;
+    font-size: 11px;
+  }
+  .svc li::before {
+    content: "•";
+    color:#1f7d3a;
+    margin-right:4px;
+  }
+
+  /* 数据/上下文层 */
+  .ctx-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+  }
+  .ctx-table th, .ctx-table td {
+    border: 1px solid #e9c189;
+    padding: 5px 7px;
+    text-align: left;
+    vertical-align: top;
+  }
+  .ctx-table th {
+    background: #fdebd2;
+    color: #a35c14;
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .ctx-table td code {
+    background: #fff8ec;
+    border-radius:3px;
+    padding: 1px 4px;
+    font-size: 10.5px;
+    color:#6f4514;
+  }
+
+  /* 底部数据/资产层 */
+  .store-row {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .store {
+    background:#fff;
+    border:1px solid #e0bdbd;
+    border-radius:8px;
+    padding:8px 8px 6px;
+    text-align:center;
+    font-size:11px;
+    color:#a83b3b;
+    position: relative;
+  }
+  .store b {
+    display:block;
+    font-size:11.5px;
+    margin-bottom:1px;
+  }
+  .store span { font-size:10px; color:#6f4a4a; }
+
+  /* 基础设施与图例 */
+  .legend {
+    background:#f4f6fa;
+    border:1px solid #c1c7d3;
+    border-radius:8px;
+    padding:10px 14px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px 22px;
+    font-size:11.5px;
+    color:#3a4251;
+    align-items:center;
+  }
+  .legend .chip {
+    display:flex; align-items:center; gap:6px;
+  }
+  .legend .chip i {
+    display:inline-block;
+    width:12px; height:12px; border-radius:3px;
+    border:1px solid rgba(0,0,0,.15);
+  }
+  .lc-purple { background:#c8b5ee; }
+  .lc-blue   { background:#aac1ee; }
+  .lc-green  { background:#a3d3ad; }
+  .lc-orange { background:#e9c189; }
+  .lc-red    { background:#e0bdbd; }
+  .lc-pink   { background:#e8b6c5; }
+  .lc-gray   { background:#c1c7d3; }
+  .lc-yellow { background:#e9d979; }
+  .lc-teal   { background:#7ec2c2; }
+
+  /* 节点 / mini badge */
+  .nv {
+    color:#6b7280;
+    font-size:10.5px;
+  }
+  .seq {
+    display:inline-block;
+    background:rgba(0,0,0,.06);
+    border-radius:3px;
+    padding:0 5px;
+    margin-left:3px;
+    font-family: Menlo,Consolas,monospace;
+    font-size:10px;
+  }
+
+  /* SVG 层 */
+  .svg-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .with-arrows { position: relative; }
+
+  /* 标题栏 */
+  .header {
+    display:flex;
+    justify-content: space-between;
+    align-items:flex-end;
+    margin-bottom: 18px;
+  }
+  .header .meta {
+    text-align:right;
+    color:#6b7280;
+    font-size:11.5px;
+    line-height:1.6;
+  }
+  .header .meta code {
+    background:#f1f3f8;
+    padding: 1px 5px;
+    border-radius:3px;
+    font-family: Menlo,Consolas,monospace;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ===== 标题 ===== -->
+  <div class="header">
+    <div>
+      <h1 class="title">Axhub 工作台 · 架构总览</h1>
+      <p class="sub"><b>C:\Users\游翔\Documents\AI work\Axhub</b> · 单机多项目 + 多智能体 · Node + PowerShell + Vite + Make</p>
+    </div>
+    <div class="meta">
+      <div>工作台控制端 <code>:7788</code></div>
+      <div>Make Admin 单例 <code>:53817</code></div>
+      <div>Vite 项目独占 <code>:51720+</code></div>
+    </div>
+  </div>
+
+  <!-- ===== 顶部三栏 ===== -->
+  <div class="top-row with-arrows">
+
+    <!-- 用户端 -->
+    <div class="panel c-user user-col">
+      <div class="panel-title">用户端<small>User</small></div>
+      <div class="item">
+        <b>开发者</b>
+        <span>Windows + 浏览器 + 命令行</span>
+      </div>
+      <div class="item">
+        <b>智能体集群</b>
+        <span>CodeBuddy · WorkBuddy · 其它</span>
+      </div>
+      <div class="item">
+        <b>浏览器</b>
+        <span>同时打开工作台+Make+Vite 三套面板</span>
+      </div>
+    </div>
+
+    <!-- 工作台控制层 -->
+    <div class="panel c-brain">
+      <div class="panel-title">工作台控制层<small>axhub-manager :7788 · 纯 Node 内置模块 / 无第三方依赖</small></div>
+      <div class="panel-desc">由 <code style="background:#fff;padding:1px 5px;border-radius:3px;">axhub-manager/server.mjs</code> 拉起的轻量 HTTP 服务，对前端面板和智能体同步暴露「工作台状态」与「执行入口」。</div>
+      <div class="steps">
+        <div class="step">
+          <div class="num">1</div>
+          <h4>项目管理</h4>
+          <p>扫盘 <code class="seq">01-项目/**</code> 生成项目库；模板创建 <code class="seq">Create-Axhub-Project.cmd</code></p>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <h4>状态与会话</h4>
+          <p>读写 <code class="seq">.workbuddy/workspace.json</code>；多智能体 editing/active/started 三态</p>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <h4>启动编排</h4>
+          <p>POST /api/projects/open → spawn launch-project.ps1 → 8 步流水线并行等待</p>
+        </div>
+        <div class="step">
+          <div class="num">4</div>
+          <h4>健康检测</h4>
+          <p>每 5s reconcile：Vite 心跳 + PID + 端口探测；15min 周期性 ping</p>
+        </div>
+        <div class="step">
+          <div class="num">5</div>
+          <h4>联动与切换</h4>
+          <p>PUT <code class="seq">:53817/api/projects/active</code> 让 Make 客户端聚焦当前项目</p>
+        </div>
+      </div>
+
+      <!-- 执行控制器腰带 -->
+      <div class="belt">
+        <span><span class="dot"></span><b>Axhub 执行控制器</b></span>
+        <span>超时控制 <code class="seq">60s/45s/30s</code></span>
+        <span>幂等缓存 <code class="seq">launch-status.json</code></span>
+        <span>日志落盘 <code class="seq">07-日志\launch-&lt;name&gt;.log</code></span>
+        <span>异常重试 Vite 缓存清理</span>
+        <span>失败回滚 stopped</span>
+      </div>
+
+      <!-- 启动时间轴 -->
+      <div class="timeline-wrap">
+        <div class="panel-title">8 步启动流水线<small>launch-project.ps1 · 并行 + 复用优先</small></div>
+        <div class="timeline">
+          <div class="tl-step"><b>1/8 读项目身份</b><span>client.json → projectId</span></div>
+          <div class="tl-step"><b>2/8 Vite 复用</b><span>心跳+端口+PID 三验</span></div>
+          <div class="tl-step"><b>3/8 启 Make</b><span>异步不等待 — 并行</span></div>
+          <div class="tl-step"><b>4/8 检查依赖</b><span>pnpm/npm 首次安装</span></div>
+          <div class="tl-step"><b>5/8 原生模块</b><span>arm64 esbuild/rollup 补齐</span></div>
+          <div class="tl-step"><b>6/8 启 Vite</b><span>--strictPort 锁死</span></div>
+          <div class="tl-step"><b>7/8 注册到 Make</b><span>等 admin + registry 就绪</span></div>
+          <div class="tl-step"><b>8/8 AXHUB_OPEN_URL</b><span>写 stdout → Node 拉浏览器</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 自愈护栏 -->
+    <div class="panel c-guard guard-col">
+      <div class="panel-title">自愈与护栏<small>Guardrails · 全链路横切</small></div>
+      <div class="item">
+        <b>环境净化</b>
+        <span>剔除 <code class="seq">NODE_OPTIONS</code> / <code class="seq">CODEBUDDY_*</code> / PATH 劫持</span>
+      </div>
+      <div class="item">
+        <b>含空格路径</b>
+        <span>.NET <code class="seq">System.Diagnostics.Process</code> 替代 <code class="seq">Start-Process</code></span>
+      </div>
+      <div class="item">
+        <b>端口防抢</b>
+        <span>Make 必须是非 <code class="seq">--dev</code> 模式，否则替换</span>
+      </div>
+      <div class="item">
+        <b>原生架构</b>
+        <span>检测 <code class="seq">win32-arm64-msvc</code>，缺失自动 install</span>
+      </div>
+      <div class="item">
+        <b>中文/UTF-8</b>
+        <span>PS1 用 ASCII 标签 <code class="seq">AXHUB_LAUNCH_STATUS</code>；中文路径专用脚本</span>
+      </div>
+      <div class="item">
+        <b>日志时间切片</b>
+        <span>append 模式日志按 <code class="seq">lastIndexOf(启动 &lt;rel&gt;)</code> 切当前次</span>
+      </div>
+      <div class="item">
+        <b>CMD 防闪退</b>
+        <span><code class="seq">.cmd</code> 必须 GBK + 子函数 call + !PID! 延迟展开</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 中层三栏：工具 / 服务 / 上下文 ===== -->
+  <div class="middle-row">
+
+    <!-- 工具集 -->
+    <div class="panel c-tools">
+      <div class="panel-title">启动与运维工具集<small>PS1 · CMD · MJS</small></div>
+      <div class="panel-desc">位于 <code style="background:#fff;padding:1px 5px;border-radius:3px;">06-运行脚本/</code>，每个工具围绕一个具体能力做强化。</div>
+      <div class="tool-grid">
+        <div class="tool"><b>launch-project.ps1</b><span>主启动脚本·8 步流水线</span></div>
+        <div class="tool"><b>scan-projects.ps1</b><span>扫 01-项目/** 同步元数据</span></div>
+        <div class="tool"><b>Create-Axhub-Project.cmd</b><span>GBK 编码·纯 ASCII 防乱码</span></div>
+        <div class="tool"><b>启动工作台.cmd</b><span>启 axhub-manager 7788</span></div>
+        <div class="tool"><b>停止工作台.cmd</b><span>扫尾端口+清理 .workbuddy</span></div>
+        <div class="tool"><b>启动 Axhub Make.cmd</b><span>单独拉起 Make 单例</span></div>
+        <div class="tool"><b>find-short.mjs</b><span>Windows 8.3 短路径辅助</span></div>
+        <div class="tool"><b>extract-api-docs.mjs</b><span>从 client.json 抽接口</span></div>
+        <div class="tool"><b>run-pandoc.mjs</b><span>文档互转（md ↔ docx）</span></div>
+        <div class="tool"><b>run-vite.mjs</b><span>独立 Vite 启动调试</span></div>
+        <div class="tool"><b>run-typecheck.mjs</b><span>tsc 类型检查</span></div>
+        <div class="tool"><b>run-esbuild.mjs</b><span>esbuild 打包调试</span></div>
+      </div>
+    </div>
+
+    <!-- 运行时服务层 -->
+    <div class="panel c-runtime">
+      <div class="panel-title">运行时服务层<small>Node 子进程 / 全局单例 + 项目独占</small></div>
+      <div class="svc-grid">
+        <div class="svc">
+          <h5>Axhub Make · 管理端</h5>
+          <span class="pill">:53817</span><span class="pill">全局单例</span><span class="pill">所有项目共享</span>
+          <ul>
+            <li>读取各项目 <code class="seq">.axhub/make/.dev-server-info.json</code> 心跳发现 Vite</li>
+            <li>多 iframe 预览项目、API 测试、集成终端</li>
+            <li>接管模板自带的 <code class="seq">autoStartMakeServerPlugin</code></li>
+          </ul>
+        </div>
+        <div class="svc">
+          <h5>Vite · 开发服务器</h5>
+          <span class="pill">:51720+</span><span class="pill">每项目独占</span><span class="pill">--strictPort</span>
+          <ul>
+            <li>每 5 秒续写心跳文件，含 PID + 端口 + startAt</li>
+            <li>端口粘滞：复用 <code class="seq">.launch-status.json</code> 上次端口</li>
+            <li>缓存损坏自动清理 <code class="seq">node_modules\.vite</code> 重试一次</li>
+          </ul>
+        </div>
+        <div class="svc">
+          <h5>axhub-manager · 工作台</h5>
+          <span class="pill">:7788</span><span class="pill">http.createServer</span>
+          <ul>
+            <li>POST <code class="seq">/api/projects/open</code> 启动 / <code class="seq">/stop</code> / <code class="seq">/active</code></li>
+            <li>GET <code class="seq">/api/context/current</code> 供智能体取状态</li>
+            <li>SSE/long-poll 实时回写 statusMap</li>
+          </ul>
+        </div>
+        <div class="svc">
+          <h5>心跳与运行机制</h5>
+          <span class="pill">5s/次</span><span class="pill">20s 僵尸</span><span class="pill">800ms 超时</span>
+          <ul>
+            <li>活体检测：PID + 端口探活 + 心跳新鲜度</li>
+            <li>reconcile 每 15 分钟校正一次</li>
+            <li>同样适用于 codebuddy / workbuddy 智能体</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 数据与上下文库 -->
+    <div class="panel c-data">
+      <div class="panel-title">数据与上下文库<small>Workspace · 项目级 · 运行时</small></div>
+      <table class="ctx-table">
+        <thead>
+          <tr><th style="width:60%">文件</th><th>作用域</th><th>写入方</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>.workbuddy/workspace.json</code></td><td>工作台级</td><td>server.mjs</td></tr>
+          <tr><td><code>01-项目/&lt;name&gt;/.workbuddy/current.json</code></td><td>项目级</td><td>各智能体</td></tr>
+          <tr><td><code>.axhub/make/.dev-server-info.json</code></td><td>Vite 心跳</td><td>writeDevServerInfoPlugin</td></tr>
+          <tr><td><code>.axhub/make/.launch-status.json</code></td><td>上次状态</td><td>PS1 步骤 8</td></tr>
+          <tr><td><code>.axhub/make/client.json</code></td><td>项目元数据</td><td>模板创建</td></tr>
+          <tr><td><code>.agents/skills/**</code></td><td>技能清单</td><td>template-init</td></tr>
+          <tr><td><code>.agents/knowledge/**</code></td><td>领域知识</td><td>template-init</td></tr>
+          <tr><td><code>.agents/rules/**</code></td><td>工作规则</td><td>template-init</td></tr>
+          <tr><td><code>Agent_Memory/**.md</code></td><td>经验记忆</td><td>智能体 update_memory</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== 底部：资产层 ===== -->
+  <div class="panel c-store" style="margin-bottom:14px;">
+    <div class="panel-title">资产层<small>物理目录 · 全部数据落盘位置</small></div>
+    <div class="store-row">
+      <div class="store"><b>01-项目/</b><span>所有产品项目<br/>结构监测·健康档案·演示</span></div>
+      <div class="store"><b>02-模板/</b><span>_project-template<br/>含 .agents 资源</span></div>
+      <div class="store"><b>03-备份/</b><span>AI work_1.1<br/>历史快照</span></div>
+      <div class="store"><b>05-回收站/</b><span>误删可恢复<br/>临时缓冲</span></div>
+      <div class="store"><b>06-运行脚本/</b><span>.ps1 / .cmd / .mjs<br/>运维工具集</span></div>
+      <div class="store"><b>07-日志/</b><span>launch-&lt;name&gt;.log<br/>server-console.log</span></div>
+      <div class="store"><b>08-文档/</b><span>复盘/排查/架构<br/>本图所在</span></div>
+      <div class="store"><b>Agent_Stack/</b><span>智能体上下文栈<br/>每次会话持久化</span></div>
+    </div>
+    <div style="font-size:10.5px; color:#6f4a4a; text-align:center; margin-top:4px;">
+      ↕ 所有产物最终落盘此处；启动器 <code style="background:#fff;padding:0 4px;border-radius:3px;">启动工作台.cmd</code> ↔ <code style="background:#fff;padding:0 4px;border-radius:3px;">停止工作台.cmd</code> 是唯一人机入口 ↕
+    </div>
+  </div>
+
+  <!-- ===== 基础设施与图例 ===== -->
+  <div class="panel c-infra">
+    <div class="panel-title">基础设施与治理<small>底层能力与图例</small></div>
+    <div class="legend">
+      <div class="chip"><i class="lc-purple"></i> 工作台控制层 · axhub-manager</div>
+      <div class="chip"><i class="lc-blue"></i>   启动与运维工具集</div>
+      <div class="chip"><i class="lc-green"></i>  运行时服务层 · Make + Vite</div>
+      <div class="chip"><i class="lc-orange"></i> 数据与上下文库</div>
+      <div class="chip"><i class="lc-red"></i>    资产层目录（物理位置）</div>
+      <div class="chip"><i class="lc-pink"></i>   自愈与护栏机制</div>
+      <div class="chip"><i class="lc-gray"></i>   基础设施与图例</div>
+      <div class="chip"><i class="lc-yellow"></i> 控制平面 ↔ 数据平面</div>
+      <div class="chip"><i class="lc-teal"></i>   心跳/活体检测通路</div>
+    </div>
+    <div style="font-size:11px;color:#3a4251;line-height:1.7;margin-top:8px;">
+      <b>运行拓扑（单实例多项目）</b>　工作台后端 7788 与 Make 53817 均为全局单例；每个项目独占一个 Vite 端口且 <code style="background:#fff;padding:0 4px;border-radius:3px;">--strictPort</code> 锁死；
+      跨服务发现靠 <code style="background:#fff;padding:0 4px;border-radius:3px;">.axhub/make/.dev-server-info.json</code> 心跳文件 + 端口探活；
+      智能体（CodeBuddy / WorkBuddy）通过 <code style="background:#fff;padding:0 4px;border-radius:3px;">GET :7788/api/context/current</code> 拉取工作台状态，避免各自保活。
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

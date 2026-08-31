@@ -1,0 +1,45 @@
+# ===== 项目文件（独立仓库，不纳入工作台仓库）=====
+01-项目/
+
+# ===== 备份 / 回收站 / 日志 / 导出 =====
+03-备份/
+05-回收站/
+07-日志/
+09-导出/
+
+# ===== 依赖与构建产物 =====
+node_modules/
+dist/
+build/
+release/
+
+# ===== 日志与临时文件 =====
+*.log
+*.tmp
+*.bak
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+~$*
+
+# ===== IDE / 工作台内部 =====
+.workbuddy/
+.idea/
+.vscode/
+*.code-workspace
+
+# ===== 系统/管理二进制（Sysinternals 等）=====
+axhub-manager/handle.exe
+axhub-manager/handle64a.exe
+
+# ===== 环境变量与密钥 =====
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+# ===== 运行时生成的临时脚本 =====
+axhub-manager/*.tmp.ps1

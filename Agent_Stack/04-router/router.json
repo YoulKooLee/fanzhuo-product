@@ -1,0 +1,98 @@
+{
+  "version": "1.1",
+  "name": "axhub-router",
+  "base": "C:\\Users\\游翔\\Documents\\AI work\\Axhub\\Agent_Stack",
+  "note": "scope 加载过滤：项目工作区（01-项目/XXX）只加载 universal 与 project 路由；workspace 路由仅在以 Axhub 根/axhub-manager 为工作区的工作台任务中加载。命中 project 路由时，先读项目根 project-memory.md（优先级最高）。",
+  "fallback": {
+    "load": [],
+    "skill": "general",
+    "note": "未命中的场景走通用能力，避免任务中断"
+  },
+  "routes": [
+    {
+      "id": "RTE-START-01",
+      "intent": "启动/状态机",
+      "scope": "workspace",
+      "description": "启动开发栈、项目状态机、Make 联动、必点两次问题（仅工作台任务）",
+      "triggers": {
+        "keywords": ["启动", "开发栈", "Make", "必点两次", "已停止", "状态机", "starting", "open"],
+        "semantic": "与启动开发栈、项目运行状态、Make 客户端联动相关的请求"
+      },
+      "load": {
+        "skills": ["01-skill/axhub-launch.md"],
+        "rules": ["03-rules/startup.md"],
+        "knowledge": ["Agent_Memory/001-启动与状态机.md"]
+      },
+      "priority": 20,
+      "enabled": true
+    },
+    {
+      "id": "RTE-SCRIPT-02",
+      "intent": "脚本/编码",
+      "scope": "universal",
+      "description": "PowerShell/Node/.cmd/中文路径/编码/架构问题（所有项目通用）",
+      "triggers": {
+        "keywords": ["脚本", "路径", "编码", "cmd", "bat", "中文", "架构", "GBK", "乱码", "spawn", "原生包"],
+        "semantic": "与写脚本、处理路径编码、跨架构原生包相关的请求"
+      },
+      "load": {
+        "skills": ["01-skill/axhub-script.md"],
+        "rules": ["03-rules/script-encoding.md"],
+        "knowledge": ["Agent_Memory/002-脚本与编码纪律.md"]
+      },
+      "priority": 20,
+      "enabled": true
+    },
+    {
+      "id": "RTE-LAYOUT-03",
+      "intent": "前端布局",
+      "scope": ["universal", "project"],
+      "description": "前端布局、大屏、样式塌陷、比例容器、PrototypeLayout（比例以项目记忆为准）",
+      "triggers": {
+        "keywords": ["布局", "大屏", "塌陷", "contents", "比例", "fullWidth", "样式", "Tailwind", "grid"],
+        "semantic": "与前端布局、大屏样式、grid 塌陷相关的请求"
+      },
+      "load": {
+        "skills": ["01-skill/axhub-layout.md"],
+        "rules": ["03-rules/layout.md"],
+        "knowledge": ["Agent_Memory/003-布局与前端实现.md"]
+      },
+      "priority": 20,
+      "enabled": true
+    },
+    {
+      "id": "RTE-FILE-04",
+      "intent": "文件/操作规范",
+      "scope": "universal",
+      "description": "新建文件、存放地点、备份、删除、锁文件（用户铁律，所有项目通用）",
+      "triggers": {
+        "keywords": ["新建文件", "存放", "备份", "删除", "锁文件", "创建文件", "放哪"],
+        "semantic": "与文件创建位置、备份删除、锁文件处理相关的请求"
+      },
+      "load": {
+        "skills": [],
+        "rules": ["03-rules/file-ops.md"],
+        "knowledge": ["Agent_Memory/000-文件与操作规范.md"]
+      },
+      "priority": 20,
+      "enabled": true
+    },
+    {
+      "id": "RTE-PRODUCT-05",
+      "intent": "产品设计",
+      "scope": "universal",
+      "description": "写 PRD、原型转需求、创意探索、营销落地页（所有项目通用）",
+      "triggers": {
+        "keywords": ["PRD", "原型", "需求", "创意", "设计", "官网", "落地页", "brainstorm"],
+        "semantic": "与产品需求文档、原型设计、创意探索相关的请求"
+      },
+      "load": {
+        "skills": ["prd-writer", "prototype-to-prd", "brainstorming", "vibepm-web-generator"],
+        "rules": [],
+        "knowledge": []
+      },
+      "priority": 10,
+      "enabled": true
+    }
+  ]
+}

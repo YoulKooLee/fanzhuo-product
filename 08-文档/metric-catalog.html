@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>产品原型 - 指标管理平台 · 指标编目 (metric-catalog)</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* =========================================================
+       Ant Design v6 Design Tokens
+       严格遵循 ant-design-system-portable202606.md 规范
+       ========================================================= */
+    :root {
+      --color-primary: #1677FF;
+      --color-primary-hover: #4096FF;
+      --color-primary-active: #0958D9;
+      --color-success: #52C41A;
+      --color-warning: #FAAD14;
+      --color-error: #FF4D4F;
+      --color-info: #1677FF;
+      --color-link: #1677FF;
+
+      --color-text: rgba(0, 0, 0, 0.88);
+      --color-text-secondary: rgba(0, 0, 0, 0.65);
+      --color-text-tertiary: rgba(0, 0, 0, 0.45);
+      --color-text-quaternary: rgba(0, 0, 0, 0.25);
+      --color-text-heading: rgba(0, 0, 0, 0.88);
+      --color-text-disabled: rgba(0, 0, 0, 0.25);
+      --color-text-placeholder: rgba(0, 0, 0, 0.25);
+      --color-text-label: rgba(0, 0, 0, 0.65);
+
+      --color-bg-container: #FFFFFF;
+      --color-bg-elevated: #FFFFFF;
+      --color-bg-layout: #F5F5F5;
+      --color-bg-mask: rgba(0, 0, 0, 0.45);
+      --color-bg-spotlight: rgba(0, 0, 0, 0.85);
+
+      --color-fill: rgba(0, 0, 0, 0.15);
+      --color-fill-secondary: rgba(0, 0, 0, 0.06);
+      --color-fill-tertiary: rgba(0, 0, 0, 0.04);
+      --color-fill-quaternary: rgba(0, 0, 0, 0.02);
+
+      --color-border: #D9D9D9;
+      --color-border-secondary: #F0F0F0;
+      --color-border-disabled: #D9D9D9;
+      --color-split: rgba(5, 5, 5, 0.06);
+
+      --control-item-bg-hover: rgba(0, 0, 0, 0.04);
+      --control-item-bg-active: #E6F4FF;
+      --control-item-bg-active-hover: #BAE0FF;
+      --color-bg-container-disabled: rgba(0, 0, 0, 0.04);
+      --color-fill-content-hover: rgba(0, 0, 0, 0.15);
+
+      --size-unit: 4px;
+      --margin-xxs: 4px;
+      --margin-xs: 8px;
+      --margin-sm: 12px;
+      --margin: 16px;
+      --margin-md: 20px;
+      --margin-lg: 24px;
+      --margin-xl: 32px;
+      --margin-xxl: 48px;
+
+      --border-radius-xs: 2px;
+      --border-radius-sm: 4px;
+      --border-radius: 6px;
+      --border-radius-lg: 8px;
+
+      --control-height-sm: 24px;
+      --control-height: 32px;
+      --control-height-lg: 40px;
+
+      --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+      --font-size-sm: 12px;
+      --font-size: 14px;
+      --font-size-lg: 16px;
+      --font-size-xl: 20px;
+      --font-size-h3: 24px;
+      --font-size-h2: 30px;
+      --font-size-h1: 38px;
+      --line-height: 1.5714;
+      --font-weight-strong: 600;
+
+      --box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+      --box-shadow-tertiary: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+
+      --motion-duration-fast: 0.1s;
+      --motion-duration-mid: 0.2s;
+      --motion-duration-slow: 0.3s;
+      --motion-ease-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
+      --motion-ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+
+      --header-height: 48px;
+      --sider-width: 208px;
+      --content-padding: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font-family);
+      font-size: var(--font-size);
+      line-height: var(--line-height);
+      color: var(--color-text);
+      background-color: var(--color-bg-layout);
+      overflow: hidden;
+    }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--color-bg-layout); }
+    ::-webkit-scrollbar-thumb { background: var(--color-fill); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--color-text-tertiary); }
+
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .flex-1 { flex: 1; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .justify-end { justify-content: flex-end; }
+    .gap-xs { gap: var(--margin-xs); }
+    .gap-sm { gap: var(--margin-sm); }
+    .gap { gap: var(--margin); }
+    .gap-lg { gap: var(--margin-lg); }
+    .flex-wrap { flex-wrap: wrap; }
+    .relative { position: relative; }
+    .absolute { position: absolute; }
+    .fixed { position: fixed; }
+    .sticky { position: sticky; }
+    .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+    .top-0 { top: 0; }
+    .z-10 { z-index: 10; }
+    .z-50 { z-index: 50; }
+    .z-60 { z-index: 60; }
+    .w-full { width: 100%; }
+    .h-full { height: 100%; }
+    .h-screen { height: 100vh; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-y-auto { overflow-y: auto; }
+    .overflow-x-auto { overflow-x: auto; }
+    .text-left { text-align: left; }
+    .text-center { text-align: center; }
+    .block { display: block; }
+    .inline-flex { display: inline-flex; }
+    .grid { display: grid; }
+    .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .list-disc { list-style-type: disc; }
+    .ml-4 { margin-left: var(--margin); }
+    .mr-xs { margin-right: var(--margin-xs); }
+    .mr-sm { margin-right: var(--margin-sm); }
+    .mb-0 { margin-bottom: 0; }
+    .mb-xs { margin-bottom: var(--margin-xs); }
+    .mb-sm { margin-bottom: var(--margin-sm); }
+    .mb { margin-bottom: var(--margin); }
+    .mb-lg { margin-bottom: var(--margin-lg); }
+    .mt-xs { margin-top: var(--margin-xs); }
+    .mt-sm { margin-top: var(--margin-sm); }
+    .mt-lg { margin-top: var(--margin-lg); }
+    .p-sm { padding: var(--margin-sm); }
+    .p { padding: var(--margin); }
+    .p-lg { padding: var(--margin-lg); }
+    .px-sm { padding-left: var(--margin-sm); padding-right: var(--margin-sm); }
+    .px { padding-left: var(--margin); padding-right: var(--margin); }
+    .px-lg { padding-left: var(--margin-lg); padding-right: var(--margin-lg); }
+    .py-xs { padding-top: var(--margin-xs); padding-bottom: var(--margin-xs); }
+    .py-sm { padding-top: var(--margin-sm); padding-bottom: var(--margin-sm); }
+    .py { padding-top: var(--margin); padding-bottom: var(--margin); }
+    .pb-sm { padding-bottom: var(--margin-sm); }
+    .font-mono { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; }
+    .font-medium { font-weight: 500; }
+    .font-semibold { font-weight: 600; }
+    .font-bold { font-weight: 700; }
+    .text-xs { font-size: var(--font-size-sm); }
+    .text-sm { font-size: var(--font-size); }
+    .text-base { font-size: var(--font-size-lg); }
+    .text-xl { font-size: var(--font-size-xl); }
+    .text-h3 { font-size: var(--font-size-h3); }
+    .text-primary { color: var(--color-primary); }
+    .text-secondary { color: var(--color-text-secondary); }
+    .text-tertiary { color: var(--color-text-tertiary); }
+    .text-quaternary { color: var(--color-text-quaternary); }
+    .text-error { color: var(--color-error); }
+    .text-success { color: var(--color-success); }
+    .text-white { color: #FFFFFF; }
+    .bg-white { background-color: var(--color-bg-container); }
+    .bg-layout { background-color: var(--color-bg-layout); }
+    .bg-fill-secondary { background-color: var(--color-fill-secondary); }
+    .bg-fill-tertiary { background-color: var(--color-fill-tertiary); }
+    .cursor-pointer { cursor: pointer; }
+    .cursor-default { cursor: default; }
+    .resize-none { resize: none; }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wide { letter-spacing: 0.05em; }
+    .flex-shrink-0 { flex-shrink: 0; }
+
+    #app { height: 100vh; }
+
+    .app-header {
+      height: var(--header-height);
+      padding: 0 var(--content-padding);
+      background: var(--color-bg-container);
+      border-bottom: 1px solid var(--color-border-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--border-radius);
+      background: var(--color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFF;
+      font-size: var(--font-size);
+    }
+
+    .brand-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-strong);
+      color: var(--color-text);
+      margin: 0;
+    }
+
+    .app-sider {
+      width: var(--sider-width);
+      min-height: calc(100vh - var(--header-height));
+      background: var(--color-bg-container);
+      border-right: 1px solid var(--color-border-secondary);
+      padding: var(--margin-sm) 0;
+    }
+
+    .sider-section-title {
+      padding: 0 var(--content-padding);
+      margin-bottom: var(--margin-xs);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-strong);
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .sidebar-menu-item {
+      height: 40px;
+      padding: 0 var(--content-padding);
+      display: flex;
+      align-items: center;
+      gap: var(--margin-sm);
+      color: var(--color-text);
+      font-size: var(--font-size);
+      transition: all var(--motion-duration-mid) var(--motion-ease-out);
+      cursor: pointer;
+    }
+
+    .sidebar-menu-item:hover {
+      background-color: var(--control-item-bg-hover);
+      color: var(--color-primary);
+    }
+
+    .sidebar-menu-item.active {
+      background-color: var(--control-item-bg-active);
+      color: var(--color-primary);
+      border-right: 3px solid var(--color-primary);
+    }
+
+    .menu-icon { width: 20px; text-align: center; }
+
+    .sider-parent {
+      font-weight: var(--font-weight-strong);
+      cursor: default;
+      background: var(--color-fill-quaternary);
+    }
+    .sider-parent:hover { background: var(--color-fill-quaternary); color: var(--color-text); }
+
+    .sider-sub-item {
+      height: 38px;
+      padding-left: calc(var(--content-padding) + 28px);
+      display: flex;
+      align-items: center;
+      gap: var(--margin-xs);
+      color: var(--color-text-secondary);
+      font-size: var(--font-size);
+      transition: all var(--motion-duration-mid) var(--motion-ease-out);
+      cursor: pointer;
+    }
+    .sider-sub-item:hover { background-color: var(--control-item-bg-hover); color: var(--color-primary); }
+    .sider-sub-item.active {
+      background-color: var(--control-item-bg-active);
+      color: var(--color-primary);
+      border-right: 3px solid var(--color-primary);
+    }
+    .sider-sub-item .sub-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-text-quaternary); flex-shrink: 0; }
+    .sider-sub-item.active .sub-dot { background: var(--color-primary); }
+
+    .app-main {
+      flex: 1;
+      padding: var(--content-padding);
+      min-width: 0;
+    }
+
+    .page-header {
+      margin-bottom: var(--margin-lg);
+    }
+
+    .page-title {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-strong);
+      color: var(--color-text-heading);
+      margin: 0 0 var(--margin-xs) 0;
+    }
+
+    .page-desc {
+      font-size: var(--font-size);
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    .card {
+      background: var(--color-bg-container);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--box-shadow-tertiary);
+      border: 1px solid var(--color-border-secondary);
+    }
+
+    .card-body { padding: var(--content-padding); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--margin-xs);
+      height: var(--control-height);
+      padding: 0 15px;
+      border-radius: var(--border-radius);
+      font-size: var(--font-size);
+      font-weight: 500;
+      line-height: 1;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all var(--motion-duration-mid) var(--motion-ease-out);
+      white-space: nowrap;
+    }
+
+    .btn:active { transform: scale(0.96); }
+
+    .btn-primary { background: var(--color-primary); color: #FFF; border-color: var(--color-primary); }
+    .btn-primary:hover { background: var(--color-primary-hover); border-color: var(--color-primary-hover); }
+
+    .btn-default { background: #FFF; color: var(--color-text); border-color: var(--color-border); }
+    .btn-default:hover { color: var(--color-primary); border-color: var(--color-primary); }
+
+    .btn-danger { background: var(--color-error); color: #FFF; border-color: var(--color-error); }
+
+    .btn-sm { height: var(--control-height-sm); padding: 0 7px; font-size: var(--font-size); border-radius: var(--border-radius-sm); }
+    .btn-lg { height: var(--control-height-lg); padding: 0 15px; font-size: var(--font-size-lg); border-radius: var(--border-radius-lg); }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      height: var(--control-height);
+      padding: 0 11px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius);
+      font-size: var(--font-size);
+      color: var(--color-text);
+      background: #FFF;
+      transition: all var(--motion-duration-mid) var(--motion-ease-out);
+      outline: none;
+    }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder { color: var(--color-text-placeholder); }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.1);
+    }
+
+    .form-input:disabled,
+    .form-select:disabled {
+      background: var(--color-bg-container-disabled);
+      color: var(--color-text-disabled);
+      cursor: not-allowed;
+    }
+
+    .form-textarea { height: auto; padding: 8px 11px; }
+
+    .data-table { width: 100%; border-collapse: collapse; font-size: var(--font-size); }
+    .data-table th {
+      background: #FAFAFA;
+      font-weight: var(--font-weight-strong);
+      color: var(--color-text-heading);
+      padding: var(--margin) var(--margin);
+      text-align: left;
+      border-bottom: 1px solid var(--color-border-secondary);
+    }
+    .data-table td {
+      padding: var(--margin) var(--margin);
+      border-bottom: 1px solid var(--color-border-secondary);
+      color: var(--color-text);
+    }
+    .data-table tbody tr { transition: background-color var(--motion-duration-fast) var(--motion-ease-out); cursor: pointer; }
+    .data-table tbody tr:hover { background: #FAFAFA; }
+    .data-table tbody tr.selected { background: var(--control-item-bg-active); }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 0 7px;
+      border-radius: var(--border-radius-sm);
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      line-height: 20px;
+      border: 1px solid transparent;
+    }
+    .tag-blue { background: #E6F4FF; color: #1677FF; border-color: #91CAFF; }
+    .tag-green { background: #F6FFED; color: #52C41A; border-color: #B7EB8F; }
+    .tag-red { background: #FFF2F0; color: #FF4D4F; border-color: #FFCCC7; }
+    .tag-warning { background: #FFFBE6; color: #FAAD14; border-color: #FFE58F; }
+    .tag-purple { background: #F9F0FF; color: #722ED1; border-color: #EFDBFF; }
+    .tag-gray { background: #FAFAFA; color: var(--color-text-secondary); border-color: var(--color-border); }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-bg-mask);
+      z-index: 60;
+      opacity: 1;
+      pointer-events: auto;
+      transition: opacity var(--motion-duration-slow) var(--motion-ease-out);
+    }
+    .modal-content {
+      background: var(--color-bg-elevated);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--box-shadow);
+      width: 100%;
+      max-width: 520px;
+      max-height: 85vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform var(--motion-duration-slow) var(--motion-ease-out), opacity var(--motion-duration-slow) var(--motion-ease-out);
+    }
+    .modal-wide { max-width: 680px; }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--margin) var(--margin-lg);
+      border-bottom: 1px solid var(--color-border-secondary);
+      flex-shrink: 0;
+    }
+    .modal-title { font-size: var(--font-size-lg); font-weight: var(--font-weight-strong); color: var(--color-text-heading); margin: 0; }
+    .modal-body { padding: var(--margin-lg); overflow-y: auto; flex: 1; }
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--margin-sm);
+      padding: var(--margin-sm) var(--margin-lg);
+      border-top: 1px solid var(--color-border-secondary);
+      background: var(--color-bg-layout);
+      flex-shrink: 0;
+    }
+    .modal-hidden { opacity: 0; pointer-events: none; }
+    .modal-hidden .modal-content { transform: scale(0.95); opacity: 0; }
+    .icon-btn {
+      width: 32px; height: 32px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border: none; background: transparent; color: var(--color-text-tertiary);
+      border-radius: var(--border-radius); cursor: pointer;
+      transition: all var(--motion-duration-mid) var(--motion-ease-out);
+    }
+    .icon-btn:hover { color: var(--color-text); background: var(--color-fill-secondary); }
+
+    .form-group { margin-bottom: var(--margin); }
+    .form-group:last-child { margin-bottom: 0; }
+    .form-label { display: block; font-size: var(--font-size); color: var(--color-text-label); margin-bottom: var(--margin-xs); }
+    .required { color: var(--color-error); }
+    .radio-group { display: flex; gap: var(--margin); }
+    .radio-label { display: flex; align-items: center; gap: var(--margin-xs); cursor: pointer; font-size: var(--font-size); }
+
+    .info-block { background: var(--color-bg-layout); border-radius: var(--border-radius-lg); padding: var(--margin); margin-bottom: var(--margin); }
+    .info-block-title { font-size: var(--font-size); font-weight: var(--font-weight-strong); color: var(--color-text); margin: 0 0 var(--margin-sm) 0; display: flex; align-items: center; gap: var(--margin-xs); }
+    .info-item-label { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--margin-xxs); }
+    .info-item-value { font-size: var(--font-size); color: var(--color-text); font-weight: 500; }
+
+    .inline-item {
+      display: inline-flex; align-items: center; gap: var(--margin-xs);
+      background: var(--color-bg-container); border: 1px solid var(--color-border);
+      border-radius: var(--border-radius); padding: 6px 11px; font-size: var(--font-size);
+    }
+
+    .selectable-list { border: 1px solid var(--color-border); border-radius: var(--border-radius); max-height: 240px; overflow-y: auto; }
+    .selectable-list-item {
+      padding: 8px 11px; display: flex; align-items: center; gap: var(--margin-xs);
+      cursor: pointer; transition: background-color var(--motion-duration-fast) var(--motion-ease-out);
+    }
+    .selectable-list-item:hover { background: var(--control-item-bg-hover); }
+
+    .pagination { display: flex; align-items: center; gap: var(--margin-xs); }
+    .page-btn {
+      height: var(--control-height); min-width: var(--control-height); padding: 0 7px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid var(--color-border); border-radius: var(--border-radius);
+      background: #FFF; color: var(--color-text); font-size: var(--font-size); cursor: pointer;
+      transition: all var(--motion-duration-mid) var(--motion-ease-out);
+    }
+    .page-btn:hover { color: var(--color-primary); border-color: var(--color-primary); }
+    .page-btn.active { background: var(--color-primary); color: #FFF; border-color: var(--color-primary); }
+
+    .divider { width: 1px; background: var(--color-border-secondary); }
+
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+    .desc-section { display: none; }
+    .desc-section.active { display: block; }
+
+    /* 右侧说明面板 */
+    #right-panel {
+      width: 25%;
+      min-width: 300px;
+      max-width: 380px;
+      background: #FFFBE6;
+      border-left: 1px dashed #FFE58F;
+      overflow-y: auto;
+    }
+    .right-panel-inner { padding: var(--margin); }
+
+    .prototype-badge { background: #FFFBE6; border: 1px solid #FFE58F; border-radius: var(--border-radius-lg); padding: var(--margin-sm); margin-bottom: var(--margin); }
+    .badge-label { display: inline-block; padding: 1px 6px; background: #FAAD14; color: #FFF; font-size: 10px; font-weight: bold; border-radius: var(--border-radius-sm); text-transform: uppercase; letter-spacing: 0.05em; }
+    .badge-title { font-size: var(--font-size-sm); font-weight: var(--font-weight-strong); color: #D48806; }
+    .badge-desc { font-size: 11px; color: #D48806; line-height: 1.5; margin: var(--margin-xs) 0 0 0; }
+
+    .right-panel-title {
+      display: flex; align-items: center; gap: var(--margin-xs);
+      font-size: var(--font-size-sm); font-weight: var(--font-weight-strong); color: #D48806;
+      padding-bottom: var(--margin-sm); margin-bottom: var(--margin);
+      border-bottom: 1px solid #FFE58F;
+    }
+
+    .proto-element { position: relative; transition: all var(--motion-duration-mid) var(--motion-ease-out); border-radius: var(--border-radius); }
+    .proto-element:hover { box-shadow: 0 0 0 2px var(--color-primary), 0 4px 12px rgba(22, 119, 255, 0.15); background-color: rgba(22, 119, 255, 0.03); }
+    .proto-element.active-highlight { box-shadow: 0 0 0 2px var(--color-primary), 0 4px 12px rgba(22, 119, 255, 0.2); background-color: rgba(22, 119, 255, 0.05); }
+
+    .proto-desc {
+      transition: all var(--motion-duration-mid) var(--motion-ease-out);
+      border-radius: var(--border-radius);
+      border: 1px solid #FFE58F;
+      background-color: #FFFBF0;
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      padding: var(--margin-lg) var(--margin);
+    }
+    .proto-desc-number {
+      width: 32px; height: 32px; background: #FAAD14; color: #FFF; border-radius: 50%;
+      font-size: var(--font-size); font-weight: bold; display: inline-flex; align-items: center; justify-content: center;
+      margin-bottom: var(--margin-sm); flex-shrink: 0;
+    }
+    .proto-desc-title { font-size: var(--font-size); font-weight: 600; color: var(--color-text); margin-bottom: var(--margin-xs); }
+    .proto-desc-text { font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.6; }
+    .proto-desc-list { list-style: none; padding: 0; margin: var(--margin-xs) 0 0 0; text-align: left; }
+    .proto-desc-list li { position: relative; padding-left: 16px; line-height: 1.7; }
+    .proto-desc-list li::before { content: ''; position: absolute; left: 4px; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: #FAAD14; }
+    .proto-desc:hover { background-color: #FFF3CF; border-color: #FAAD14; box-shadow: 0 2px 8px rgba(250, 173, 20, 0.15); }
+    .proto-desc.active-highlight { background-color: #FFE58F; border-color: #D48806; box-shadow: 0 2px 8px rgba(250, 173, 20, 0.25); }
+
+    #connections { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
+    .connection-line { fill: none; stroke: var(--color-primary); stroke-width: 2; opacity: 0.6; transition: all var(--motion-duration-mid) var(--motion-ease-out); }
+    .connection-line.active { stroke-width: 3; opacity: 1; }
+    .connection-label { fill: #FFF; font-size: var(--font-size-sm); font-weight: bold; text-anchor: middle; dominant-baseline: central; }
+    .connection-label-bg { fill: var(--color-primary); }
+
+    .mobile-toggle-btn {
+      display: none; position: fixed; bottom: 20px; right: 20px; z-index: 100;
+      width: 48px; height: 48px; border-radius: 50%; background: var(--color-primary); color: #FFF;
+      align-items: center; justify-content: center; box-shadow: var(--box-shadow); cursor: pointer; border: none;
+      transition: all var(--motion-duration-mid) var(--motion-ease-out);
+    }
+    .mobile-toggle-btn:hover { background: var(--color-primary-hover); }
+
+    /* 规则类型徽标 */
+    .rule-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 2px 10px; border-radius: 12px; font-size: var(--font-size-sm); font-weight: 500;
+      background: var(--color-fill-tertiary); border: 1px solid var(--color-border-secondary); color: var(--color-text-secondary);
+    }
+
+    /* 图表预览占位 */
+    .chart-preview {
+      height: 220px; border: 1px dashed var(--color-border); border-radius: var(--border-radius-lg);
+      display: flex; align-items: flex-end; gap: 16px; padding: var(--margin); background: var(--color-bg-layout);
+    }
+    .chart-bar { flex: 1; background: var(--color-primary); border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0; opacity: 0.85; transition: all var(--motion-duration-mid); }
+
+    @media (max-width: 768px) {
+      #app { flex-direction: column; }
+      #left-panel { width: 100% !important; height: 60vh; }
+      .app-sider { display: none; }
+      .divider { display: none; }
+      #right-panel { width: 100% !important; max-width: none; height: 40vh; border-left: none; border-top: 1px dashed #FFE58F; }
+      #connections { display: none; }
+      .mobile-toggle-btn { display: flex; }
+    }
+  </style>
+</head>
+<body class="bg-layout">
+
+  <button class="mobile-toggle-btn" id="mobileToggle" onclick="toggleMobileView()">
+    <i class="fas fa-info"></i>
+  </button>
+
+  <div id="app" class="flex relative">
+
+    <!-- 左侧：产品界面 -->
+    <div id="left-panel" class="flex-1 overflow-y-auto bg-layout relative">
+
+      <header class="app-header">
+        <div class="flex items-center gap-sm">
+          <div class="brand-logo"><i class="fas fa-chart-line"></i></div>
+          <h1 class="brand-title">指标管理平台</h1>
+        </div>
+        <div class="flex items-center gap">
+          <span class="text-sm text-secondary"><i class="fas fa-user-circle mr-xs"></i>指标管理员</span>
+          <button class="icon-btn"><i class="fas fa-bell"></i></button>
+        </div>
+      </header>
+
+      <div class="flex">
+        <!-- 侧边菜单 -->
+        <aside class="app-sider">
+          <div class="sider-section-title">功能菜单</div>
+          <nav>
+            <div class="sidebar-menu-item"><i class="fas fa-tachometer-alt menu-icon"></i><span>仪表盘</span></div>
+            <div class="sidebar-menu-item sider-parent"><i class="fas fa-book menu-icon"></i><span>指标编目管理</span></div>
+            <div class="sider-sub-item active" data-view="indicator" onclick="showView('indicator', this)">
+              <span class="sub-dot"></span><span>指标编目</span>
+            </div>
+            <div class="sider-sub-item" data-view="rule" onclick="showView('rule', this)">
+              <span class="sub-dot"></span><span>生成规则配置</span>
+            </div>
+            <div class="sider-sub-item" data-view="chart" onclick="showView('chart', this)">
+              <span class="sub-dot"></span><span>图表配置</span>
+            </div>
+            <div class="sider-sub-item" data-view="temp" onclick="showView('temp', this)">
+              <span class="sub-dot"></span><span>临时值配置</span>
+            </div>
+            <div class="sider-sub-item" data-view="import" onclick="showView('import', this)">
+              <span class="sub-dot"></span><span>导入导出</span>
+            </div>
+            <div class="sidebar-menu-item"><i class="fas fa-sitemap menu-icon"></i><span>调度执行</span></div>
+            <div class="sidebar-menu-item"><i class="fas fa-folder-tree menu-icon"></i><span>指标目录</span></div>
+            <div class="sidebar-menu-item"><i class="fas fa-cog menu-icon"></i><span>系统管理</span></div>
+          </nav>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="app-main">
+
+          <!-- ======================= 视图 1：指标编目 ======================= -->
+          <section id="view-indicator" class="view-section active">
+            <div class="flex items-center justify-between page-header">
+              <div>
+                <h2 class="page-title">指标编目</h2>
+                <p class="page-desc">定义指标元数据，支持发布/撤销、克隆与批量导入导出；仅管"指标怎么定义"，不执行规则</p>
+              </div>
+              <div class="proto-element" data-proto-id="1">
+                <button onclick="openModal('indicatorModal')" class="btn btn-primary"><i class="fas fa-plus"></i> 新增指标</button>
+              </div>
+            </div>
+
+            <div class="proto-element card mb" data-proto-id="2">
+              <div class="card-body">
+                <div class="flex items-center gap-sm flex-wrap">
+                  <input type="text" placeholder="指标名称 / 编码" class="form-input" style="width: 200px;">
+                  <select class="form-select" style="width: 140px;">
+                    <option>全部值类型</option><option>数值</option><option>百分比</option><option>金额</option>
+                  </select>
+                  <select class="form-select" style="width: 140px;">
+                    <option>全部更新频率</option><option>实时</option><option>每日</option><option>每月</option>
+                  </select>
+                  <select class="form-select" style="width: 140px;">
+                    <option>全部状态</option><option>已发布</option><option>未发布</option>
+                  </select>
+                  <select class="form-select" style="width: 140px;">
+                    <option>全部应用</option><option>APP-TRADE</option><option>APP-RISK</option>
+                  </select>
+                  <button class="btn btn-default"><i class="fas fa-search mr-xs"></i>查询</button>
+                  <button class="btn btn-default"><i class="fas fa-redo mr-xs"></i>重置</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="proto-element card overflow-hidden" data-proto-id="3">
+              <div class="overflow-x-auto">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>指标编码</th><th>名称</th><th>分类</th><th>应用</th><th>负责人</th>
+                      <th>值类型</th><th>更新频率</th><th>状态</th><th class="text-center">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="selected" onclick="selectRow(this)">
+                      <td class="font-mono text-primary">M-TRADE-001</td>
+                      <td class="font-medium">日均交易额</td>
+                      <td><span class="tag tag-gray">交易</span></td>
+                      <td>APP-TRADE</td>
+                      <td>张伟</td>
+                      <td><span class="tag tag-blue">金额</span></td>
+                      <td>每日</td>
+                      <td><span class="tag tag-green">已发布</span></td>
+                      <td class="text-center">
+                        <button onclick="event.stopPropagation();openModal('indicatorModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                        <button onclick="event.stopPropagation();alert('已撤销发布')" class="btn btn-sm btn-default text-tertiary" style="border-color:transparent;padding:0 6px;">撤销</button>
+                        <button onclick="event.stopPropagation();alert('已克隆，生成新编码 M-TRADE-001_copy_...')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">克隆</button>
+                      </td>
+                    </tr>
+                    <tr onclick="selectRow(this)">
+                      <td class="font-mono text-primary">M-RISK-007</td>
+                      <td class="font-medium">风险敞口比率</td>
+                      <td><span class="tag tag-gray">风险</span></td>
+                      <td>APP-RISK</td>
+                      <td>李娜</td>
+                      <td><span class="tag tag-purple">百分比</span></td>
+                      <td>实时</td>
+                      <td><span class="tag tag-gray">未发布</span></td>
+                      <td class="text-center">
+                        <button onclick="event.stopPropagation();openModal('indicatorModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                        <button onclick="event.stopPropagation();alert('已发布')" class="btn btn-sm btn-default text-success" style="border-color:transparent;padding:0 6px;">发布</button>
+                        <button onclick="event.stopPropagation();alert('已克隆，生成新编码 M-RISK-007_copy_...')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">克隆</button>
+                      </td>
+                    </tr>
+                    <tr onclick="selectRow(this)">
+                      <td class="font-mono text-primary">M-TRADE-012</td>
+                      <td class="font-medium">活跃用户数</td>
+                      <td><span class="tag tag-gray">交易</span></td>
+                      <td>APP-TRADE</td>
+                      <td>王芳</td>
+                      <td><span class="tag tag-blue">数值</span></td>
+                      <td>每月</td>
+                      <td><span class="tag tag-green">已发布</span></td>
+                      <td class="text-center">
+                        <button onclick="event.stopPropagation();openModal('indicatorModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                        <button onclick="event.stopPropagation();alert('已撤销发布')" class="btn btn-sm btn-default text-tertiary" style="border-color:transparent;padding:0 6px;">撤销</button>
+                        <button onclick="event.stopPropagation();alert('已克隆，生成新编码 M-TRADE-012_copy_...')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">克隆</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="flex items-center justify-between px-lg py-sm" style="border-top:1px solid var(--color-border-secondary);">
+                <span class="text-sm text-secondary">共 3 条记录</span>
+                <div class="pagination">
+                  <button class="page-btn">上一页</button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn">下一页</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="proto-element mt-lg text-center text-sm text-quaternary" data-proto-id="4">
+              <i class="fas fa-hand-pointer mr-xs"></i>操作列支持「发布/撤销」切换状态，及「克隆」快速复制指标（含规则与图表，不含临时值）
+            </div>
+          </section>
+
+          <!-- ======================= 视图 2：生成规则配置 ======================= -->
+          <section id="view-rule" class="view-section">
+            <div class="flex items-center justify-between page-header">
+              <div>
+                <h2 class="page-title">生成规则配置</h2>
+                <p class="page-desc">为指标配置 8 种生成规则（rule_config）；本模块只管"规则怎么配"，执行由 metric-rule-engine 负责</p>
+              </div>
+              <div class="proto-element" data-proto-id="1">
+                <button onclick="openModal('ruleModal')" class="btn btn-primary"><i class="fas fa-plus"></i> 新增规则</button>
+              </div>
+            </div>
+
+            <div class="proto-element card mb overflow-hidden" data-proto-id="2">
+              <div class="card-body pb-sm">
+                <div class="text-sm text-secondary mb-sm">规则类型（8 种）</div>
+                <div class="flex flex-wrap gap-sm">
+                  <span class="rule-pill"><i class="fas fa-upload"></i>接口主动上报</span>
+                  <span class="rule-pill"><i class="fas fa-table"></i>数据表主动上报</span>
+                  <span class="rule-pill"><i class="fas fa-stream"></i>Kafka 获取</span>
+                  <span class="rule-pill"><i class="fas fa-cloud-download-alt"></i>接口获取</span>
+                  <span class="rule-pill"><i class="fas fa-database"></i>SQL 开发</span>
+                  <span class="rule-pill"><i class="fas fa-project-diagram"></i>维度计算</span>
+                  <span class="rule-pill"><i class="fas fa-calculator"></i>指标计算</span>
+                  <span class="rule-pill"><i class="fas fa-keyboard"></i>手动录入</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="proto-element card overflow-hidden" data-proto-id="3">
+              <div class="overflow-x-auto">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>指标</th><th>规则类型</th><th>cron 周期</th><th class="text-center">启用</th><th class="text-center">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="selected" onclick="selectRow(this)">
+                      <td class="font-medium">日均交易额</td>
+                      <td><span class="rule-pill"><i class="fas fa-database"></i>SQL 开发</span></td>
+                      <td class="font-mono">0 2 * * *</td>
+                      <td class="text-center"><span class="tag tag-green">是</span></td>
+                      <td class="text-center">
+                        <button onclick="event.stopPropagation();openModal('ruleModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                        <button onclick="event.stopPropagation();alert('已删除')" class="btn btn-sm btn-default text-error" style="border-color:transparent;padding:0 6px;">删除</button>
+                      </td>
+                    </tr>
+                    <tr onclick="selectRow(this)">
+                      <td class="font-medium">活跃用户数</td>
+                      <td><span class="rule-pill"><i class="fas fa-stream"></i>Kafka 获取</span></td>
+                      <td class="font-mono text-quaternary">—</td>
+                      <td class="text-center"><span class="tag tag-green">是</span></td>
+                      <td class="text-center">
+                        <button onclick="event.stopPropagation();openModal('ruleModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                        <button onclick="event.stopPropagation();alert('已删除')" class="btn btn-sm btn-default text-error" style="border-color:transparent;padding:0 6px;">删除</button>
+                      </td>
+                    </tr>
+                    <tr onclick="selectRow(this)">
+                      <td class="font-medium">风险敞口比率</td>
+                      <td><span class="rule-pill"><i class="fas fa-calculator"></i>指标计算</span></td>
+                      <td class="font-mono text-quaternary">—</td>
+                      <td class="text-center"><span class="tag tag-gray">否</span></td>
+                      <td class="text-center">
+                        <button onclick="event.stopPropagation();openModal('ruleModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                        <button onclick="event.stopPropagation();alert('已删除')" class="btn btn-sm btn-default text-error" style="border-color:transparent;padding:0 6px;">删除</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="proto-element mt-lg text-center text-sm text-quaternary" data-proto-id="4">
+              <i class="fas fa-info-circle mr-xs"></i>接口获取 / SQL 开发 / 维度计算 必须配置 cron，否则保存时被拒（RULE_CRON_REQUIRED）
+            </div>
+          </section>
+
+          <!-- ======================= 视图 3：图表配置 ======================= -->
+          <section id="view-chart" class="view-section">
+            <div class="flex items-center justify-between page-header">
+              <div>
+                <h2 class="page-title">图表配置</h2>
+                <p class="page-desc">为指标配置可视化图表（indicator_chart），支持预览（mock 样例数据，不查真实指标值）</p>
+              </div>
+              <button onclick="openModal('chartPreviewModal')" class="btn btn-default"><i class="fas fa-eye mr-xs"></i>预览</button>
+            </div>
+
+            <div class="grid grid-cols-2 gap">
+              <div class="proto-element card" data-proto-id="1">
+                <div class="card-body">
+                  <div class="form-group">
+                    <label class="form-label">图表类型 <span class="required">*</span></label>
+                    <select class="form-select w-full">
+                      <option>折线图 LINE</option><option>柱状图 BAR</option><option>饼图 PIE</option><option>面积图 AREA</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">关联指标</label>
+                    <select class="form-select w-full"><option>日均交易额</option><option>活跃用户数</option><option>风险敞口比率</option></select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="proto-element card" data-proto-id="2">
+                <div class="card-body">
+                  <div class="form-group">
+                    <label class="form-label">统计维度 stat_dimension</label>
+                    <input type="text" value="biz_date" class="form-input w-full">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">统计指标 stat_metric</label>
+                    <input type="text" value="metric_value" class="form-input w-full">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">config_json</label>
+                    <textarea rows="3" class="form-textarea w-full font-mono">{"smooth":true,"stack":false}</textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="proto-element card mt-lg overflow-hidden" data-proto-id="3">
+              <div class="card-body">
+                <div class="text-sm text-secondary mb-sm">图表预览（mock 样例数据）</div>
+                <div class="chart-preview">
+                  <div class="chart-bar" style="height:60%"></div>
+                  <div class="chart-bar" style="height:80%"></div>
+                  <div class="chart-bar" style="height:45%"></div>
+                  <div class="chart-bar" style="height:90%"></div>
+                  <div class="chart-bar" style="height:70%"></div>
+                  <div class="chart-bar" style="height:55%"></div>
+                  <div class="chart-bar" style="height:85%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="proto-element mt-lg text-center text-sm text-quaternary" data-proto-id="4">
+              <i class="fas fa-info-circle mr-xs"></i>preview 基于 statDimension / statMetric 生成 3~5 个固定样例点，不查真实值
+            </div>
+          </section>
+
+          <!-- ======================= 视图 4：临时值配置 ======================= -->
+          <section id="view-temp" class="view-section">
+            <div class="flex items-center justify-between page-header">
+              <div>
+                <h2 class="page-title">临时值配置</h2>
+                <p class="page-desc">为指标配置临时覆盖值（temp_value），有效期内同时写入 DB 与 Redis（TTL=有效期）</p>
+              </div>
+              <div class="proto-element" data-proto-id="1">
+                <button onclick="openModal('tempModal')" class="btn btn-primary"><i class="fas fa-plus"></i> 配置临时值</button>
+              </div>
+            </div>
+
+            <div class="proto-element card mb" data-proto-id="2">
+              <div class="card-body">
+                <div class="flex items-center gap-sm flex-wrap">
+                  <select class="form-select" style="width: 200px;"><option>日均交易额</option><option>活跃用户数</option></select>
+                  <input type="datetime-local" class="form-input" style="width: 200px;">
+                  <span class="text-secondary">至</span>
+                  <input type="datetime-local" class="form-input" style="width: 200px;">
+                  <button class="btn btn-default"><i class="fas fa-search mr-xs"></i>查询</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="proto-element card overflow-hidden" data-proto-id="3">
+              <div class="overflow-x-auto">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>指标</th><th>临时值</th><th>生效开始</th><th>生效结束</th><th>状态</th><th class="text-center">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="selected" onclick="selectRow(this)">
+                      <td class="font-medium">日均交易额</td>
+                      <td class="font-mono text-primary">1,280,000</td>
+                      <td class="text-secondary">2026-07-01 00:00</td>
+                      <td class="text-secondary">2026-07-31 23:59</td>
+                      <td><span class="tag tag-green">生效中</span></td>
+                      <td class="text-center"><button onclick="event.stopPropagation();openModal('tempModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button></td>
+                    </tr>
+                    <tr onclick="selectRow(this)">
+                      <td class="font-medium">活跃用户数</td>
+                      <td class="font-mono text-primary">52,000</td>
+                      <td class="text-secondary">2026-06-10 00:00</td>
+                      <td class="text-secondary">2026-06-20 23:59</td>
+                      <td><span class="tag tag-gray">已过期</span></td>
+                      <td class="text-center"><button onclick="event.stopPropagation();openModal('tempModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="proto-element mt-lg text-center text-sm text-quaternary" data-proto-id="4">
+              <i class="fas fa-bolt mr-xs"></i>读取 getActive(indicatorId)：先查 Redis（key=temp:value:{id}，TTL=有效期），未命中回源 DB
+            </div>
+          </section>
+
+          <!-- ======================= 视图 5：导入导出 ======================= -->
+          <section id="view-import" class="view-section">
+            <div class="flex items-center justify-between page-header">
+              <div>
+                <h2 class="page-title">批量导入导出</h2>
+                <p class="page-desc">基于 easyexcel 的 Excel 批量导入导出（三 sheet：indicators / rules / temp_values），导入整批校验、失败回滚</p>
+              </div>
+              <div class="flex gap-sm">
+                <button onclick="alert('已导出 indicators/rules/temp_values 三个 sheet')" class="btn btn-primary"><i class="fas fa-download mr-xs"></i> 导出</button>
+                <div class="proto-element" data-proto-id="2">
+                  <button onclick="openModal('importModal')" class="btn btn-default"><i class="fas fa-upload mr-xs"></i> 导入</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="proto-element card mb" data-proto-id="1">
+              <div class="card-body">
+                <div class="info-block-title"><i class="fas fa-file-excel text-success"></i>导出结构</div>
+                <div class="flex flex-wrap gap-sm">
+                  <span class="inline-item"><i class="fas fa-table text-tertiary"></i>indicators<button class="icon-btn" style="width:20px;height:20px;"><i class="fas fa-download"></i></button></span>
+                  <span class="inline-item"><i class="fas fa-table text-tertiary"></i>rules<button class="icon-btn" style="width:20px;height:20px;"><i class="fas fa-download"></i></button></span>
+                  <span class="inline-item"><i class="fas fa-table text-tertiary"></i>temp_values<button class="icon-btn" style="width:20px;height:20px;"><i class="fas fa-download"></i></button></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="proto-element card overflow-hidden" data-proto-id="3">
+              <div class="card-body">
+                <div class="text-sm text-secondary mb-sm">最近一次导入结果（行级错误）</div>
+                <table class="data-table">
+                  <thead><tr><th>行号</th><th>指标编码</th><th>错误信息</th></tr></thead>
+                  <tbody>
+                    <tr><td class="font-mono">5</td><td class="font-mono text-primary">M-TRADE-001</td><td class="text-error">编码重复</td></tr>
+                    <tr><td class="font-mono">8</td><td class="font-mono text-primary">（空）</td><td class="text-error">编码为空</td></tr>
+                    <tr><td class="font-mono">12</td><td class="font-mono text-primary">M-RISK-999</td><td class="text-error">应用不存在</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="proto-element mt-lg text-center text-sm text-quaternary" data-proto-id="4">
+              <i class="fas fa-undo mr-xs"></i>存在行级错误则整批不落库（抛 IMPORT_ROW_INVALID），保证原子性
+            </div>
+          </section>
+
+        </main>
+      </div>
+    </div>
+
+    <div class="divider" id="divider"></div>
+
+    <!-- 右侧：功能说明 -->
+    <div id="right-panel">
+      <div class="right-panel-inner">
+        <div class="prototype-badge">
+          <div class="flex items-center gap-xs mb-xs">
+            <span class="badge-label">Prototype</span>
+            <span class="badge-title">原型说明</span>
+          </div>
+          <p class="badge-desc">以下内容为当前视图界面元素的功能说明，悬停左侧对应区域可高亮连线。</p>
+        </div>
+
+        <div class="right-panel-title">
+          <i class="fas fa-map-signs" style="color:#FAAD14;"></i><span>功能说明 · 指标编目</span>
+        </div>
+
+        <!-- 指标编目 说明 -->
+        <div id="desc-indicator" class="desc-section active flex flex-col gap-sm">
+          <div class="proto-desc" data-proto-id="1">
+            <span class="proto-desc-number">1</span>
+            <h3 class="proto-desc-title">新增 / 编辑指标</h3>
+            <p class="proto-desc-text">表单含 code（唯一）、name、category、app、owner、valueType、updateFrequency、calcMethod、example。落库前校验：code 重复抛 <b>INDICATOR_CODE_DUPLICATE(3001)</b>；app 经 <b>AppService.resolveAppName</b> 校验，不存在抛 <b>APP_NOT_FOUND(3003)</b>。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="2">
+            <span class="proto-desc-number">2</span>
+            <h3 class="proto-desc-title">多维筛选</h3>
+            <p class="proto-desc-text">IndicatorQueryReq 支持 nameKeyword / valueType / ruleType / publishStatus / owner / 时间范围，分页返回 <b>Result&lt;PageResult&gt;</b>（records/total/pageNum/pageSize）。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="3">
+            <span class="proto-desc-number">3</span>
+            <h3 class="proto-desc-title">指标列表</h3>
+            <p class="proto-desc-text">展示指标核心字段与发布状态标签；code 唯一约束（uniq_indicator_code）。列表空返回 []、字符串空返回 ""。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="4">
+            <span class="proto-desc-number">4</span>
+            <h3 class="proto-desc-title">发布 / 撤销 / 克隆</h3>
+            <p class="proto-desc-text">publish 置 PUBLISHED；支持 batchPublish / batchUnpublish。clone 生成新 code（原 code + "_copy_" + 时间戳），<b>复制 rule_config 与 chart，不复制 temp_value</b>。</p>
+          </div>
+        </div>
+
+        <!-- 生成规则配置 说明 -->
+        <div id="desc-rule" class="desc-section flex flex-col gap-sm">
+          <div class="proto-desc" data-proto-id="1">
+            <span class="proto-desc-number">1</span>
+            <h3 class="proto-desc-title">新增 / 编辑规则</h3>
+            <p class="proto-desc-text">选择 ruleType + 填写 paramJson（按类型对应 8 个 POJO）。保存时经 <b>RuleParamValidator</b> 按 ruleType 路由校验，参数非法抛 <b>RULE_PARAM_INVALID(3005)</b>。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="2">
+            <span class="proto-desc-number">2</span>
+            <h3 class="proto-desc-title">8 种规则类型</h3>
+            <p class="proto-desc-text">接口主动上报 / 数据表主动上报 / Kafka 获取 / 接口获取 / SQL 开发 / 维度计算 / 指标计算 / 手动录入。每种类型有独立参数结构（如 SqlParam.datasourceKey+sqlText，MetricCalcParam.formula）。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="3">
+            <span class="proto-desc-number">3</span>
+            <h3 class="proto-desc-title">规则列表</h3>
+            <p class="proto-desc-text">按 indicatorId 关联（GET /indicators/{id}/rules）；enabled 开关；cron 周期仅部分类型必填。本模块只配置，执行由 metric-rule-engine 负责。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="4">
+            <span class="proto-desc-number">4</span>
+            <h3 class="proto-desc-title">cron 必填规则</h3>
+            <p class="proto-desc-text">接口获取 / SQL 开发 / 维度计算 必须配置 cron，否则保存被拒抛 <b>RULE_CRON_REQUIRED(3006)</b>；手动录入等无需 cron。</p>
+          </div>
+        </div>
+
+        <!-- 图表配置 说明 -->
+        <div id="desc-chart" class="desc-section flex flex-col gap-sm">
+          <div class="proto-desc" data-proto-id="1">
+            <span class="proto-desc-number">1</span>
+            <h3 class="proto-desc-title">图表类型</h3>
+            <p class="proto-desc-text">复用 metric-common 的 <b>ChartType</b> 枚举（LINE/BAR/PIE/AREA 等）；图表配置存于 indicator_chart 表，按 indicator 维度关联。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="2">
+            <span class="proto-desc-number">2</span>
+            <h3 class="proto-desc-title">统计维度与指标</h3>
+            <p class="proto-desc-text">stat_dimension（如 biz_date）决定 X 轴，stat_metric（如 metric_value）决定 Y 轴；config_json 承载额外展示参数。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="3">
+            <span class="proto-desc-number">3</span>
+            <h3 class="proto-desc-title">预览（mock）</h3>
+            <p class="proto-desc-text">ChartService.preview 基于 statDimension / statMetric 生成 3~5 个固定样例点返回 ChartPreviewResp，<b>不查真实指标值</b>。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="4">
+            <span class="proto-desc-number">4</span>
+            <h3 class="proto-desc-title">端点</h3>
+            <p class="proto-desc-text">POST /indicators/{id}/charts（save）、GET /indicators/{id}/charts（get）、GET /indicators/{id}/charts/preview，均带 @RequirePermission + Result。</p>
+          </div>
+        </div>
+
+        <!-- 临时值 说明 -->
+        <div id="desc-temp" class="desc-section flex flex-col gap-sm">
+          <div class="proto-desc" data-proto-id="1">
+            <span class="proto-desc-number">1</span>
+            <h3 class="proto-desc-title">新增 / 编辑临时值</h3>
+            <p class="proto-desc-text">填写 value + effectiveStart + effectiveEnd，<b>双写</b> DB（temp_value 表）与 Redis（key=temp:value:{indicatorId}）。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="2">
+            <span class="proto-desc-number">2</span>
+            <h3 class="proto-desc-title">有效期区间</h3>
+            <p class="proto-desc-text">effectiveEnd 必须晚于 effectiveStart，否则抛 <b>TEMP_VALUE_INVALID_RANGE(3008)</b>。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="3">
+            <span class="proto-desc-number">3</span>
+            <h3 class="proto-desc-title">临时值列表</h3>
+            <p class="proto-desc-text">按 indicator 维度查询；getActive(indicatorId) 提供实时读取，供目录 / rule-engine 消费。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="4">
+            <span class="proto-desc-number">4</span>
+            <h3 class="proto-desc-title">Redis 缓存</h3>
+            <p class="proto-desc-text">写入时 TTL = 有效期时长（秒）；读取先命中 Redis，未命中回源 DB 查有效记录（LIMIT 1）。</p>
+          </div>
+        </div>
+
+        <!-- 导入导出 说明 -->
+        <div id="desc-import" class="desc-section flex flex-col gap-sm">
+          <div class="proto-desc" data-proto-id="1">
+            <span class="proto-desc-number">1</span>
+            <h3 class="proto-desc-title">导出</h3>
+            <p class="proto-desc-text">easyexcel 写出三个 sheet（indicators / rules / temp_values），数据来自各 Service 查询；返回 Excel 文件流。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="2">
+            <span class="proto-desc-number">2</span>
+            <h3 class="proto-desc-title">导入</h3>
+            <p class="proto-desc-text">读取 indicators / rules / temp_values 三个 sheet；rules、temp_values 按 indicatorCode 解析 indicatorId；appCode 由请求参数或每行 app 列提供。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="3">
+            <span class="proto-desc-number">3</span>
+            <h3 class="proto-desc-title">行级校验</h3>
+            <p class="proto-desc-text">IndicatorImportListener 收集重复 / 空编码等错误，输出 ImportErrorRow（rowNum, code, message）；错误不落库。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="4">
+            <span class="proto-desc-number">4</span>
+            <h3 class="proto-desc-title">整批回滚</h3>
+            <p class="proto-desc-text">若存在任意行级错误，抛 <b>IMPORT_ROW_INVALID(3011)</b> 并<b>整批不落库</b>，保证导入原子性。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <svg id="connections" class="absolute top-0 left-0 w-full h-full" style="pointer-events:none;"></svg>
+
+  <!-- ========== 模态框：新增/编辑指标 ========== -->
+  <div id="indicatorModal" class="modal-overlay modal-hidden">
+    <div class="modal-content modal-wide">
+      <div class="modal-header">
+        <h3 class="modal-title">新增指标</h3>
+        <button onclick="closeModal('indicatorModal')" class="icon-btn"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="grid grid-cols-2 gap">
+          <div class="form-group">
+            <label class="form-label">指标编码 <span class="required">*</span></label>
+            <input type="text" placeholder="如 M-TRADE-001" class="form-input w-full">
+          </div>
+          <div class="form-group">
+            <label class="form-label">指标名称 <span class="required">*</span></label>
+            <input type="text" placeholder="请输入名称" class="form-input w-full">
+          </div>
+          <div class="form-group">
+            <label class="form-label">分类</label>
+            <input type="text" placeholder="如 交易" class="form-input w-full">
+          </div>
+          <div class="form-group">
+            <label class="form-label">所属应用 <span class="required">*</span></label>
+            <select class="form-select w-full"><option>APP-TRADE</option><option>APP-RISK</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">负责人</label>
+            <input type="text" placeholder="owner" class="form-input w-full">
+          </div>
+          <div class="form-group">
+            <label class="form-label">值类型 <span class="required">*</span></label>
+            <select class="form-select w-full"><option>数值</option><option>百分比</option><option>金额</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">更新频率 <span class="required">*</span></label>
+            <select class="form-select w-full"><option>实时</option><option>每日</option><option>每月</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">示例值</label>
+            <input type="text" placeholder="example" class="form-input w-full">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">计算方法</label>
+          <textarea rows="2" class="form-textarea w-full" placeholder="calc_method"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal('indicatorModal')" class="btn btn-default">取消</button>
+        <button onclick="closeModal('indicatorModal');alert('保存成功')" class="btn btn-primary">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 模态框：新增/编辑规则 ========== -->
+  <div id="ruleModal" class="modal-overlay modal-hidden">
+    <div class="modal-content modal-wide">
+      <div class="modal-header">
+        <h3 class="modal-title">新增规则</h3>
+        <button onclick="closeModal('ruleModal')" class="icon-btn"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="grid grid-cols-2 gap">
+          <div class="form-group">
+            <label class="form-label">关联指标 <span class="required">*</span></label>
+            <select class="form-select w-full"><option>日均交易额</option><option>活跃用户数</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">规则类型 <span class="required">*</span></label>
+            <select class="form-select w-full">
+              <option>SQL 开发</option><option>接口获取</option><option>Kafka 获取</option>
+              <option>维度计算</option><option>指标计算</option><option>手动录入</option>
+            </select>
+          </div>
+          <div class="form-group" style="grid-column: span 2;">
+            <label class="form-label">cron 周期（接口获取/SQL/维度计算 必填）</label>
+            <input type="text" placeholder="如 0 2 * * *" class="form-input w-full font-mono">
+          </div>
+          <div class="form-group" style="grid-column: span 2;">
+            <label class="form-label">参数 JSON（param_json）</label>
+            <textarea rows="5" class="form-textarea w-full font-mono">{"datasourceKey":"ds-main","sqlText":"SELECT sum(amount) ..."}</textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">启用</label>
+            <div class="radio-group">
+              <label class="radio-label"><input type="radio" name="ruleEnabled" checked style="accent-color:#1677FF;"><span>是</span></label>
+              <label class="radio-label"><input type="radio" name="ruleEnabled" style="accent-color:#1677FF;"><span>否</span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal('ruleModal')" class="btn btn-default">取消</button>
+        <button onclick="closeModal('ruleModal');alert('保存成功（已通过参数校验器）')" class="btn btn-primary">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 模态框：图表预览 ========== -->
+  <div id="chartPreviewModal" class="modal-overlay modal-hidden">
+    <div class="modal-content modal-wide">
+      <div class="modal-header">
+        <h3 class="modal-title">图表预览（mock）</h3>
+        <button onclick="closeModal('chartPreviewModal')" class="icon-btn"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="flex items-center justify-between mb-sm">
+          <span class="text-sm text-secondary">日均交易额 · 折线图</span>
+          <span class="tag tag-gray text-xs">样例数据</span>
+        </div>
+        <div class="chart-preview" style="height:260px;">
+          <div class="chart-bar" style="height:55%"></div>
+          <div class="chart-bar" style="height:72%"></div>
+          <div class="chart-bar" style="height:40%"></div>
+          <div class="chart-bar" style="height:88%"></div>
+          <div class="chart-bar" style="height:63%"></div>
+          <div class="chart-bar" style="height:78%"></div>
+          <div class="chart-bar" style="height:50%"></div>
+        </div>
+        <p class="text-xs text-tertiary mt-sm">注：preview 返回 mock 数据集，不查真实指标值。</p>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal('chartPreviewModal')" class="btn btn-default">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 模态框：配置临时值 ========== -->
+  <div id="tempModal" class="modal-overlay modal-hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">配置临时值</h3>
+        <button onclick="closeModal('tempModal')" class="icon-btn"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">关联指标 <span class="required">*</span></label>
+          <select class="form-select w-full"><option>日均交易额</option><option>活跃用户数</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">临时值 <span class="required">*</span></label>
+          <input type="text" placeholder="如 1,280,000" class="form-input w-full font-mono">
+        </div>
+        <div class="grid grid-cols-2 gap">
+          <div class="form-group">
+            <label class="form-label">生效开始 <span class="required">*</span></label>
+            <input type="datetime-local" class="form-input w-full">
+          </div>
+          <div class="form-group">
+            <label class="form-label">生效结束 <span class="required">*</span></label>
+            <input type="datetime-local" class="form-input w-full">
+          </div>
+        </div>
+        <p class="text-xs text-tertiary">保存时双写 DB 与 Redis（TTL=有效期），生效结束须晚于开始。</p>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal('tempModal')" class="btn btn-default">取消</button>
+        <button onclick="closeModal('tempModal');alert('配置成功（DB+Redis 双写）')" class="btn btn-primary">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 模态框：导入 ========== -->
+  <div id="importModal" class="modal-overlay modal-hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">导入 Excel</h3>
+        <button onclick="closeModal('importModal')" class="icon-btn"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">选择文件（.xlsx）</label>
+          <input type="file" class="form-input w-full" style="padding:6px 11px;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">默认应用 appCode</label>
+          <input type="text" placeholder="如 APP-TRADE" class="form-input w-full font-mono">
+        </div>
+        <p class="text-xs text-tertiary">支持 indicators / rules / temp_values 三 sheet；存在行级错误将整批回滚。</p>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal('importModal')" class="btn btn-default">取消</button>
+        <button onclick="closeModal('importModal');alert('导入完成：3 行错误，整批未落库')" class="btn btn-primary">开始导入</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========== 视图切换 ==========
+    let activeView = 'indicator';
+    function showView(view, el) {
+      activeView = view;
+      document.querySelectorAll('.sider-sub-item').forEach(s => s.classList.remove('active'));
+      if (el) el.classList.add('active');
+      document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+      document.getElementById('view-' + view).classList.add('active');
+      document.querySelectorAll('.desc-section').forEach(s => s.classList.remove('active'));
+      document.getElementById('desc-' + view).classList.add('active');
+      // 更新右侧标题
+      const titles = {
+        indicator: '功能说明 · 指标编目',
+        rule: '功能说明 · 生成规则配置',
+        chart: '功能说明 · 图表配置',
+        temp: '功能说明 · 临时值配置',
+        import: '功能说明 · 导入导出'
+      };
+      const t = document.querySelector('.right-panel-title span');
+      if (t) t.textContent = titles[view] || '功能说明';
+      // 滚动复位并重新绘制连线
+      document.getElementById('left-panel').scrollTop = 0;
+      document.getElementById('right-panel').scrollTop = 0;
+      requestAnimationFrame(drawConnections);
+    }
+
+    // ========== 连线绘制 ==========
+    const svg = document.getElementById('connections');
+    let connections = [];
+
+    function drawConnections() {
+      svg.innerHTML = '';
+      connections = [];
+
+      const leftContainer = document.getElementById('view-' + activeView);
+      const rightContainer = document.getElementById('desc-' + activeView);
+      if (!leftContainer || !rightContainer) return;
+
+      const leftEls = leftContainer.querySelectorAll('.proto-element[data-proto-id]');
+      leftEls.forEach(leftEl => {
+        const protoId = leftEl.getAttribute('data-proto-id');
+        const rightEl = rightContainer.querySelector('.proto-desc[data-proto-id="' + protoId + '"]');
+        if (!rightEl) return;
+
+        const leftRect = leftEl.getBoundingClientRect();
+        const rightRect = rightEl.getBoundingClientRect();
+        const svgRect = svg.getBoundingClientRect();
+
+        const x1 = leftRect.right - svgRect.left;
+        const y1 = leftRect.top + leftRect.height / 2 - svgRect.top;
+        const x2 = rightRect.left - svgRect.left;
+        const y2 = rightRect.top + rightRect.height / 2 - svgRect.top;
+
+        const dx = (x2 - x1) * 0.5;
+        const cp1x = x1 + dx, cp1y = y1;
+        const cp2x = x1 + dx, cp2y = y2;
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', `M ${x1} ${y1} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x2} ${y2}`);
+        path.setAttribute('class', 'connection-line');
+        path.setAttribute('data-proto-id', protoId);
+        svg.appendChild(path);
+
+        const midX = (x1 + x2) / 2;
+        const midY = (y1 + y2) / 2;
+        const bg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        bg.setAttribute('cx', midX); bg.setAttribute('cy', midY); bg.setAttribute('r', 11);
+        bg.setAttribute('class', 'connection-label-bg');
+        svg.appendChild(bg);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', midX); text.setAttribute('y', midY); text.setAttribute('dy', '0.05em');
+        text.setAttribute('class', 'connection-label');
+        text.textContent = protoId;
+        svg.appendChild(text);
+
+        connections.push({ protoId, path, leftEl, rightEl });
+      });
+    }
+
+    function highlightConnection(protoId, active) {
+      const conn = connections.find(c => c.protoId === protoId);
+      if (!conn) return;
+      if (active) {
+        conn.path.classList.add('active');
+        conn.leftEl.classList.add('active-highlight');
+        conn.rightEl.classList.add('active-highlight');
+      } else {
+        conn.path.classList.remove('active');
+        conn.leftEl.classList.remove('active-highlight');
+        conn.rightEl.classList.remove('active-highlight');
+      }
+    }
+
+    function bindHoverEvents() {
+      document.querySelectorAll('.proto-element[data-proto-id]').forEach(el => {
+        el.addEventListener('mouseenter', () => highlightConnection(el.getAttribute('data-proto-id'), true));
+        el.addEventListener('mouseleave', () => highlightConnection(el.getAttribute('data-proto-id'), false));
+      });
+      document.querySelectorAll('.proto-desc[data-proto-id]').forEach(el => {
+        el.addEventListener('mouseenter', () => highlightConnection(el.getAttribute('data-proto-id'), true));
+        el.addEventListener('mouseleave', () => highlightConnection(el.getAttribute('data-proto-id'), false));
+      });
+    }
+
+    // ========== 模态框 ==========
+    function openModal(id) { document.getElementById(id).classList.remove('modal-hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('modal-hidden'); }
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.add('modal-hidden'); });
+    });
+
+    // ========== 表格选择 ==========
+    function selectRow(row) {
+      const tb = row.closest('tbody');
+      if (tb) tb.querySelectorAll('tr').forEach(tr => tr.classList.remove('selected'));
+      row.classList.add('selected');
+    }
+
+    // ========== 移动端切换 ==========
+    let mobileShowDesc = false;
+    function toggleMobileView() {
+      mobileShowDesc = !mobileShowDesc;
+      const leftPanel = document.getElementById('left-panel');
+      const rightPanel = document.getElementById('right-panel');
+      const btn = document.getElementById('mobileToggle');
+      if (mobileShowDesc) {
+        leftPanel.style.display = 'none'; rightPanel.style.height = '100vh'; btn.innerHTML = '<i class="fas fa-desktop"></i>';
+      } else {
+        leftPanel.style.display = ''; rightPanel.style.height = ''; btn.innerHTML = '<i class="fas fa-info"></i>';
+      }
+    }
+
+    // ========== 初始化 ==========
+    function init() { drawConnections(); bindHoverEvents(); }
+    document.addEventListener('DOMContentLoaded', () => { setTimeout(init, 100); });
+    let resizeTimer;
+    window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(drawConnections, 150); });
+    document.getElementById('left-panel').addEventListener('scroll', () => { requestAnimationFrame(drawConnections); });
+    document.getElementById('right-panel').addEventListener('scroll', () => { requestAnimationFrame(drawConnections); });
+  </script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+.top-header-shell{
+   height: 106px;
+}
+.top-header-shell ~ .screen-content {
+   top: 0;
+   bottom: 0px;
+   padding-top: 106px;
+   z-index: 1;
+}
+.title-bar {
+  display: grid;
+  grid-template-columns: 56px 1fr 56px;
+  align-items: center;
+}
+
+.title-btn {
+  text-align: center;
+  color: #4b68fd;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.title-btn-placeholder {
+  visibility: hidden;
+}
+
+.app-shell {
+  position: relative;
+  min-height: 100%;
+  padding: 16px;
+}
+
+.template-card {
+  margin-bottom: 16px;
+  border-radius: 20px;
+  background: #ffffff;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.template-card h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  line-height: 1.3;
+  color: #1a1a1a;
+}
+
+.template-card p {
+  margin: 0;
+  color: #8b8f97;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.home-indicator {
+  bottom: 10px;
+  z-index: 10;
+}
+
+@media (max-width: 768px) {
+  .top-header-shell {
+    height: 52px;
+}
+  .top-header-shell ~ .screen-content {
+    top: 0;
+    bottom: 0px;
+    padding-top: 52px;
+  }
+}

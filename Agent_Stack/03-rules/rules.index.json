@@ -1,0 +1,17 @@
+{
+  "version": "1.1",
+  "note": "机读规则索引。AI 按 trigger 关键词模糊匹配，命中后加载对应规则 id 的完整规则。scope: universal=所有任务可加载；workspace=仅工作台任务（以 Axhub 根为工作区）加载；project=仅该项目（读项目根 project-memory.md）。",
+  "index": [
+    { "trigger": ["spawn", "子进程", "含空格路径", "Program Files", "Start-Process"], "rules": ["R-SCRIPT-01"], "scope": "universal" },
+    { "trigger": ["中文路径", "乱码", "命令行", "路径", "节点乱码"], "rules": ["R-SCRIPT-02", "R-SCRIPT-06"], "scope": "universal" },
+    { "trigger": ["cmd", "bat", "批处理", "GBK", "闪退", "ANSI", "goto"], "rules": ["R-SCRIPT-03"], "scope": "universal" },
+    { "trigger": ["环境变量", "NODE_OPTIONS", "SAFE_DELETE", "子进程", "spawn"], "rules": ["R-SCRIPT-04"], "scope": "universal" },
+    { "trigger": ["锁文件", "架构", "vite 起不来", "rollup", "esbuild", "原生包", "arm64"], "rules": ["R-SCRIPT-05"], "scope": "universal" },
+    { "trigger": ["路径比较", "路径匹配", "正斜杠", "反斜杠", "Make 联动"], "rules": ["R-SCRIPT-07"], "scope": "universal" },
+    { "trigger": ["启动", "启动中", "已停止", "必点两次", "Make", "开发栈"], "rules": ["R-START-01", "R-START-02", "R-START-03", "R-START-04"], "scope": "workspace" },
+    { "trigger": ["状态", "乱跳", "touchProjectCtx", "reconcile", "intent"], "rules": ["R-START-05"], "scope": "workspace" },
+    { "trigger": ["布局", "大屏", "塌陷", "contents", "fullWidth", "Tailwind", "grid", "样式"], "rules": ["R-LAYOUT-01", "R-LAYOUT-02", "R-LAYOUT-03"], "scope": "universal" },
+    { "trigger": ["大屏比例", "大屏尺寸", "布局风格", "项目记忆", "project-memory"], "rules": ["R-LAYOUT-04"], "scope": "project" },
+    { "trigger": ["新建文件", "存放", "备份", "删除", "锁文件", "创建文件", "放哪"], "rules": ["R-FILE-01", "R-FILE-02", "R-FILE-03", "R-FILE-04"], "scope": "universal" }
+  ]
+}

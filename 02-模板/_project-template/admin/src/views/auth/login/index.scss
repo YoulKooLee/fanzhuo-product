@@ -1,0 +1,405 @@
+@use '@styles/variables.scss' as *;
+
+:global(html, body) {
+  height: 100%;
+  overflow: hidden;
+}
+
+.login-page {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  background-image: url('@imgs/login/login-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  // 顶部/中部背景光晕
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: none;
+    z-index: 0;
+  }
+
+  // 背景底部装饰（“背景底部”增强）
+  &::after {
+    content: '';
+    position: absolute;
+    left: -25%;
+    right: -25%;
+    bottom: -180px;
+    height: 360px;
+    background: none;
+    border-top-left-radius: 56% 100%;
+    border-top-right-radius: 56% 100%;
+    transform: rotate(-6deg);
+    z-index: 0;
+  }
+}
+
+.login-form-top-logo {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.login-layout {
+  position: relative;
+  z-index: 1;
+  width: 1040px;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.login-left {
+  flex: 1;
+  position: relative;
+  min-width: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-illustration-wrap {
+  width: 560px;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(8px);
+}
+
+.login-illustration {
+  width: 470px;
+  max-width: 100%;
+  height: auto;
+  user-select: none;
+}
+
+.login-form-card {
+  width: 360px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  padding: 48px 30px 60px;
+  min-height: 330px;
+}
+
+.card-header {
+  margin-bottom: 40px;
+  text-align: center;
+
+  .form-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 6px;
+  }
+
+  .form-subtitle {
+    font-size: 13px;
+    color: #909399;
+    margin: 0;
+  }
+}
+
+.login-form {
+  :deep(.el-form-item) {
+    margin-bottom: 16px;
+  }
+
+  :deep(.el-input__wrapper) {
+    border-radius: 10px;
+    height: 44px;
+    box-shadow: 0 0 0 1px #dcdfe6;
+    transition:
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+
+    &:hover {
+      box-shadow: 0 0 0 1px #c0c4cc;
+    }
+
+    &.is-focus {
+      box-shadow: 0 0 0 1px var(--el-color-primary);
+    }
+  }
+
+  :deep(.el-input__inner) {
+    font-size: 14px;
+  }
+
+  :deep(.el-input__prefix) {
+    color: #909399;
+  }
+}
+
+.login-input-icon {
+  font-size: 16px;
+  color: #909399;
+}
+
+.form-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 2px 0 20px;
+  font-size: 14px;
+}
+
+:deep(.el-checkbox__label) {
+  color: #303133 !important;
+}
+
+.forget-pwd {
+  color: var(--el-color-primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// 忘记密码（text 按钮）悬停不显示背景色，保持默认字号
+:deep(.el-button.forget-pwd.is-text) {
+  font-size: inherit;
+}
+
+:deep(.el-button.forget-pwd.is-text:hover),
+:deep(.el-button.forget-pwd.is-text:focus) {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.forget-dialog {
+  margin-left: 20px;
+  margin-right: 20px;
+
+  :deep(.el-input__wrapper) {
+    border-radius: 10px;
+    height: 44px;
+    box-shadow: 0 0 0 1px #dcdfe6;
+    transition:
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+
+    &:hover {
+      box-shadow: 0 0 0 1px #c0c4cc;
+    }
+
+    &.is-focus {
+      box-shadow: 0 0 0 1px var(--el-color-primary);
+    }
+  }
+
+  :deep(.el-input__inner) {
+    font-size: 14px;
+  }
+
+  :deep(.el-input__prefix) {
+    color: var(--el-color-primary);
+  }
+}
+
+.forget-dialog-subtitle {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: #909399;
+}
+
+.forget-dialog-actions {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+
+  .el-button:not(:first-child) {
+    margin-left: 12px;
+  }
+}
+
+.forget-dialog-tip {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #165dff;
+}
+
+:deep(.el-button.login-btn) {
+  width: 100%;
+  height: 45px;
+  min-height: 45px;
+  padding: 0 !important; // 覆盖 Element Plus 默认 padding，避免高度被撑开/不生效
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 10px;
+  margin-top: 4px;
+}
+
+.default-account {
+  margin-top: 18px;
+  font-size: 12px;
+  color: #c0c4cc;
+  text-align: center;
+}
+
+.copyright {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 24px;
+  margin: 0 auto;
+  text-align: center;
+  font-size: 12px;
+  color: #909399;
+  z-index: 1;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 注册 / 忘记密码：与 LoginLeftView 并排全屏布局 */
+.login {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+
+  .right-wrap {
+    position: relative;
+    flex: 1;
+    box-sizing: border-box;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: var(--art-main-bg-color);
+
+    .header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 60px;
+
+      .icon {
+        margin-bottom: 8px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 500;
+        color: var(--art-text-gray-900);
+      }
+    }
+
+    .login-wrap {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      padding: 24px 16px 48px;
+
+      .form {
+        width: 100%;
+        max-width: 420px;
+
+        .title {
+          margin: 0;
+          font-size: 22px;
+          font-weight: 600;
+        }
+
+        .sub-title {
+          margin: 8px 0 16px;
+          font-size: 14px;
+          color: var(--el-text-color-secondary);
+        }
+
+        .input-wrap {
+          margin-top: 12px;
+        }
+
+        .login-btn {
+          width: 100%;
+        }
+
+        .back-btn {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: $device-ipad-pro) {
+  .login-layout {
+    flex-direction: column;
+    gap: 24px;
+    padding: 10px 0;
+  }
+
+  .login-left {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .login-illustration-wrap {
+    transform: translateX(0);
+  }
+
+  .login-left-brand {
+    position: relative;
+    left: auto;
+    top: auto;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+
+  .login-form-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 32px 28px 34px;
+  }
+}
+
+@media only screen and (max-width: $device-phone) {
+  .login-page {
+    padding-top: 18px;
+  }
+
+  .login-form-card {
+    border-radius: 16px;
+    padding: 28px 20px 22px;
+  }
+
+  .login-illustration {
+    width: 380px;
+  }
+
+  .copyright {
+    display: none;
+  }
+}

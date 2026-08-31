@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>产品原型 - 指标管理平台 · 系统管理（metric-system）</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* =========================================================
+       Ant Design v6 Design Tokens
+       严格遵循 ant-design-system-portable202606.md 规范
+       ========================================================= */
+    :root {
+      /* 品牌/语义色 */
+      --color-primary: #1677FF;
+      --color-primary-hover: #4096FF;
+      --color-primary-active: #0958D9;
+      --color-success: #52C41A;
+      --color-warning: #FAAD14;
+      --color-error: #FF4D4F;
+      --color-info: #1677FF;
+      --color-link: #1677FF;
+
+      /* 文字色 */
+      --color-text: rgba(0, 0, 0, 0.88);
+      --color-text-secondary: rgba(0, 0, 0, 0.65);
+      --color-text-tertiary: rgba(0, 0, 0, 0.45);
+      --color-text-quaternary: rgba(0, 0, 0, 0.25);
+      --color-text-heading: rgba(0, 0, 0, 0.88);
+      --color-text-disabled: rgba(0, 0, 0, 0.25);
+      --color-text-placeholder: rgba(0, 0, 0, 0.25);
+      --color-text-label: rgba(0, 0, 0, 0.65);
+
+      /* 背景色 */
+      --color-bg-container: #FFFFFF;
+      --color-bg-elevated: #FFFFFF;
+      --color-bg-layout: #F5F5F5;
+      --color-bg-mask: rgba(0, 0, 0, 0.45);
+      --color-bg-spotlight: rgba(0, 0, 0, 0.85);
+
+      /* 填充色 */
+      --color-fill: rgba(0, 0, 0, 0.15);
+      --color-fill-secondary: rgba(0, 0, 0, 0.06);
+      --color-fill-tertiary: rgba(0, 0, 0, 0.04);
+      --color-fill-quaternary: rgba(0, 0, 0, 0.02);
+
+      /* 边框/分割线 */
+      --color-border: #D9D9D9;
+      --color-border-secondary: #F0F0F0;
+      --color-border-disabled: #D9D9D9;
+      --color-split: rgba(5, 5, 5, 0.06);
+
+      /* 交互态 */
+      --control-item-bg-hover: rgba(0, 0, 0, 0.04);
+      --control-item-bg-active: #E6F4FF;
+      --control-item-bg-active-hover: #BAE0FF;
+      --color-bg-container-disabled: rgba(0, 0, 0, 0.04);
+      --color-fill-content-hover: rgba(0, 0, 0, 0.15);
+
+      /* 间距 */
+      --size-unit: 4px;
+      --margin-xxs: 4px;
+      --margin-xs: 8px;
+      --margin-sm: 12px;
+      --margin: 16px;
+      --margin-md: 20px;
+      --margin-lg: 24px;
+      --margin-xl: 32px;
+      --margin-xxl: 48px;
+
+      /* 圆角 */
+      --border-radius-xs: 2px;
+      --border-radius-sm: 4px;
+      --border-radius: 6px;
+      --border-radius-lg: 8px;
+
+      /* 控件高度 */
+      --control-height-sm: 24px;
+      --control-height: 32px;
+      --control-height-lg: 40px;
+
+      /* 字体 */
+      --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+      --font-size-sm: 12px;
+      --font-size: 14px;
+      --font-size-lg: 16px;
+      --font-size-xl: 20px;
+      --font-size-h3: 24px;
+      --font-size-h2: 30px;
+      --font-size-h1: 38px;
+      --line-height: 1.5714;
+      --font-weight-strong: 600;
+
+      /* 阴影 */
+      --box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+      --box-shadow-tertiary: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+
+      /* 动效 */
+      --motion-duration-fast: 0.1s;
+      --motion-duration-mid: 0.2s;
+      --motion-duration-slow: 0.3s;
+      --motion-ease-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
+      --motion-ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+
+      /* 布局 */
+      --header-height: 48px;
+      --sider-width: 208px;
+      --content-padding: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font-family);
+      font-size: var(--font-size);
+      line-height: var(--line-height);
+      color: var(--color-text);
+      background-color: var(--color-bg-layout);
+      overflow: hidden;
+    }
+
+    /* 滚动条 */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--color-bg-layout); }
+    ::-webkit-scrollbar-thumb { background: var(--color-fill); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--color-text-tertiary); }
+
+    /* 通用工具类 */
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .flex-1 { flex: 1; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .justify-end { justify-content: flex-end; }
+    .gap-xs { gap: var(--margin-xs); }
+    .gap-sm { gap: var(--margin-sm); }
+    .gap { gap: var(--margin); }
+    .gap-lg { gap: var(--margin-lg); }
+    .flex-wrap { flex-wrap: wrap; }
+    .relative { position: relative; }
+    .absolute { position: absolute; }
+    .fixed { position: fixed; }
+    .sticky { position: sticky; }
+    .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+    .top-0 { top: 0; }
+    .w-full { width: 100%; }
+    .h-full { height: 100%; }
+    .h-screen { height: 100vh; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-y-auto { overflow-y: auto; }
+    .overflow-x-auto { overflow-x: auto; }
+    .text-left { text-align: left; }
+    .text-center { text-align: center; }
+    .block { display: block; }
+    .inline-flex { display: inline-flex; }
+    .grid { display: grid; }
+    .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .list-disc { list-style-type: disc; }
+    .ml-4 { margin-left: var(--margin); }
+    .mr-xs { margin-right: var(--margin-xs); }
+    .mr-sm { margin-right: var(--margin-sm); }
+    .mb-0 { margin-bottom: 0; }
+    .mb-xs { margin-bottom: var(--margin-xs); }
+    .mb-sm { margin-bottom: var(--margin-sm); }
+    .mb { margin-bottom: var(--margin); }
+    .mb-lg { margin-bottom: var(--margin-lg); }
+    .mt-xs { margin-top: var(--margin-xs); }
+    .mt-sm { margin-top: var(--margin-sm); }
+    .mt-lg { margin-top: var(--margin-lg); }
+    .p-sm { padding: var(--margin-sm); }
+    .p { padding: var(--margin); }
+    .p-lg { padding: var(--margin-lg); }
+    .px-sm { padding-left: var(--margin-sm); padding-right: var(--margin-sm); }
+    .px { padding-left: var(--margin); padding-right: var(--margin); }
+    .px-lg { padding-left: var(--margin-lg); padding-right: var(--margin-lg); }
+    .py-xs { padding-top: var(--margin-xs); padding-bottom: var(--margin-xs); }
+    .py-sm { padding-top: var(--margin-sm); padding-bottom: var(--margin-sm); }
+    .py { padding-top: var(--margin); padding-bottom: var(--margin); }
+    .pb-sm { padding-bottom: var(--margin-sm); }
+    .font-mono { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; }
+    .font-medium { font-weight: 500; }
+    .font-semibold { font-weight: 600; }
+    .font-bold { font-weight: 700; }
+    .text-xs { font-size: var(--font-size-sm); }
+    .text-sm { font-size: var(--font-size); }
+    .text-base { font-size: var(--font-size-lg); }
+    .text-xl { font-size: var(--font-size-xl); }
+    .text-h3 { font-size: var(--font-size-h3); }
+    .text-primary { color: var(--color-primary); }
+    .text-secondary { color: var(--color-text-secondary); }
+    .text-tertiary { color: var(--color-text-tertiary); }
+    .text-quaternary { color: var(--color-text-quaternary); }
+    .text-error { color: var(--color-error); }
+    .text-success { color: var(--color-success); }
+    .text-white { color: #FFFFFF; }
+    .bg-white { background-color: var(--color-bg-container); }
+    .bg-layout { background-color: var(--color-bg-layout); }
+    .bg-fill-secondary { background-color: var(--color-fill-secondary); }
+    .bg-fill-tertiary { background-color: var(--color-fill-tertiary); }
+    .cursor-pointer { cursor: pointer; }
+    .cursor-default { cursor: default; }
+    .resize-none { resize: none; }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wide { letter-spacing: 0.05em; }
+    .flex-shrink-0 { flex-shrink: 0; }
+
+    /* 应用容器 */
+    #app { height: 100vh; }
+
+    /* 顶部导航栏 */
+    .app-header {
+      height: var(--header-height);
+      padding: 0 var(--content-padding);
+      background: var(--color-bg-container);
+      border-bottom: 1px solid var(--color-border-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--border-radius);
+      background: var(--color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFF;
+      font-size: var(--font-size);
+    }
+
+    .brand-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-strong);
+      color: var(--color-text);
+      margin: 0;
+    }
+
+    /* 侧边栏 */
+    .app-sider {
+      width: var(--sider-width);
+      min-height: calc(100vh - var(--header-height));
+      background: var(--color-bg-container);
+      border-right: 1px solid var(--color-border-secondary);
+      padding: var(--margin-sm) 0;
+      flex-shrink: 0;
+    }
+
+    .sider-section-title {
+      padding: 0 var(--content-padding);
+      margin-bottom: var(--margin-xs);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-strong);
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .sidebar-menu-item {
+      min-height: 40px;
+      padding: 0 var(--content-padding);
+      display: flex;
+      align-items: center;
+      gap: var(--margin-sm);
+      color: var(--color-text);
+      font-size: var(--font-size);
+      transition: all var(--motion-duration-mid) var(--motion-ease-out);
+      cursor: pointer;
+    }
+
+    .sidebar-menu-item:hover {
+      background-color: var(--control-item-bg-hover);
+      color: var(--color-primary);
+    }
+
+    .sidebar-menu-item.active {
+      background-color: var(--control-item-bg-active);
+      color: var(--color-primary);
+      border-right: 3px solid var(--color-primary);
+    }
+
+    .menu-icon { width: 20px; text-align: center; flex-shrink: 0; }
+
+    /* 子菜单（树形缩进） */
+    .sider-submenu { display: none; }
+    .sider-submenu.open { display: block; }
+    .sider-submenu .sidebar-menu-item { padding-left: calc(var(--content-padding) + 24px); }
+
+    /* 主内容区 */
+    .app-main {
+      flex: 1;
+      padding: var(--content-padding);
+      min-width: 0;
+    }
+
+    .page-header {
+      margin-bottom: var(--margin-lg);
+    }
+
+    .page-title {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-strong);
+      color: var(--color-text-heading);
+      margin: 0 0 var(--margin-xs) 0;
+    }
+
+    .page-desc {
+      font-size: var(--font-size);
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    /* 卡片 */
+    .card {
+      background: var(--color-bg-container);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--box-shadow-tertiary);
+      border: 1px solid var(--color-border-secondary);
+    }
+
+    .card-body { padding: var(--content-padding); }
+
+    /* 按钮 */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--margin-xs);
+      height: var(--control-height);
+      padding: 0 15px;
+      border-radius: var(--border-radius);
+      font-size: var(--font-size);
+      font-weight: 500;
+      line-height: 1;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all var(--motion-duration-mid) var(--motion-ease-out);
+      white-space: nowrap;
+    }
+
+    .btn:active { transform: scale(0.96); }
+
+    .btn-primary { background: var(--color-primary); color: #FFF; border-color: var(--color-primary); }
+    .btn-primary:hover { background: var(--color-primary-hover); border-color: var(--color-primary-hover); }
+
+    .btn-default { background: #FFF; color: var(--color-text); border-color: var(--color-border); }
+    .btn-default:hover { color: var(--color-primary); border-color: var(--color-primary); }
+
+    .btn-danger { background: var(--color-error); color: #FFF; border-color: var(--color-error); }
+    .btn-danger:hover { background: #FF7875; border-color: #FF7875; }
+
+    .btn-sm { height: var(--control-height-sm); padding: 0 7px; font-size: var(--font-size); border-radius: var(--border-radius-sm); }
+    .btn-lg { height: var(--control-height-lg); padding: 0 15px; font-size: var(--font-size-lg); border-radius: var(--border-radius-lg); }
+
+    /* 输入框 / 选择器 */
+    .form-input,
+    .form-select,
+    .form-textarea {
+      height: var(--control-height);
+      padding: 0 11px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius);
+      font-size: var(--font-size);
+      color: var(--color-text);
+      background: #FFF;
+      transition: all var(--motion-duration-mid) var(--motion-ease-out);
+      outline: none;
+    }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder { color: var(--color-text-placeholder); }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.1);
+    }
+
+    .form-input:disabled,
+    .form-select:disabled {
+      background: var(--color-bg-container-disabled);
+      color: var(--color-text-disabled);
+      cursor: not-allowed;
+    }
+
+    .form-textarea { height: auto; padding: 8px 11px; }
+
+    /* 表格 */
+    .data-table { width: 100%; border-collapse: collapse; font-size: var(--font-size); }
+    .data-table th {
+      background: #FAFAFA;
+      font-weight: var(--font-weight-strong);
+      color: var(--color-text-heading);
+      padding: var(--margin) var(--margin);
+      text-align: left;
+      border-bottom: 1px solid var(--color-border-secondary);
+    }
+    .data-table td {
+      padding: var(--margin) var(--margin);
+      border-bottom: 1px solid var(--color-border-secondary);
+      color: var(--color-text);
+    }
+    .data-table tbody tr { transition: background-color var(--motion-duration-fast) var(--motion-ease-out); cursor: pointer; }
+    .data-table tbody tr:hover { background: #FAFAFA; }
+    .data-table tbody tr.selected { background: var(--control-item-bg-active); }
+
+    /* Tag */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 0 7px;
+      border-radius: var(--border-radius-sm);
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      line-height: 20px;
+      border: 1px solid transparent;
+    }
+    .tag-blue { background: #E6F4FF; color: #1677FF; border-color: #91CAFF; }
+    .tag-green { background: #F6FFED; color: #52C41A; border-color: #B7EB8F; }
+    .tag-red { background: #FFF2F0; color: #FF4D4F; border-color: #FFCCC7; }
+    .tag-warning { background: #FFFBE6; color: #FAAD14; border-color: #FFE58F; }
+    .tag-gray { background: #FAFAFA; color: var(--color-text-secondary); border-color: var(--color-border); }
+    .tag-purple { background: #F9F0FF; color: #722ED1; border-color: #EFDBFF; }
+
+    /* 模态框 */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-bg-mask);
+      z-index: 60;
+      opacity: 1;
+      pointer-events: auto;
+      transition: opacity var(--motion-duration-slow) var(--motion-ease-out);
+    }
+    .modal-content {
+      background: var(--color-bg-elevated);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--box-shadow);
+      width: 100%;
+      max-width: 520px;
+      max-height: 85vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform var(--motion-duration-slow) var(--motion-ease-out), opacity var(--motion-duration-slow) var(--motion-ease-out);
+    }
+    .modal-wide { max-width: 680px; }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--margin) var(--margin-lg);
+      border-bottom: 1px solid var(--color-border-secondary);
+      flex-shrink: 0;
+    }
+    .modal-title { font-size: var(--font-size-lg); font-weight: var(--font-weight-strong); color: var(--color-text-heading); margin: 0; }
+    .modal-body { padding: var(--margin-lg); overflow-y: auto; flex: 1; }
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--margin-sm);
+      padding: var(--margin-sm) var(--margin-lg);
+      border-top: 1px solid var(--color-border-secondary);
+      background: var(--color-bg-layout);
+      flex-shrink: 0;
+    }
+    .modal-hidden { opacity: 0; pointer-events: none; }
+    .modal-hidden .modal-content { transform: scale(0.95); opacity: 0; }
+
+    .icon-btn {
+      width: 32px; height: 32px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border: none; background: transparent; color: var(--color-text-tertiary);
+      border-radius: var(--border-radius); cursor: pointer;
+      transition: all var(--motion-duration-mid) var(--motion-ease-out);
+    }
+    .icon-btn:hover { color: var(--color-text); background: var(--color-fill-secondary); }
+
+    /* 表单 */
+    .form-group { margin-bottom: var(--margin); }
+    .form-group:last-child { margin-bottom: 0; }
+    .form-label { display: block; font-size: var(--font-size); color: var(--color-text-label); margin-bottom: var(--margin-xs); }
+    .required { color: var(--color-error); }
+    .radio-group { display: flex; gap: var(--margin); flex-wrap: wrap; }
+    .radio-label { display: flex; align-items: center; gap: var(--margin-xs); cursor: pointer; font-size: var(--font-size); }
+
+    /* 信息块 */
+    .info-block { background: var(--color-bg-layout); border-radius: var(--border-radius-lg); padding: var(--margin); margin-bottom: var(--margin); }
+    .info-block-title { font-size: var(--font-size); font-weight: var(--font-weight-strong); color: var(--color-text); margin: 0 0 var(--margin-sm) 0; display: flex; align-items: center; gap: var(--margin-xs); }
+    .info-item-label { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--margin-xxs); }
+    .info-item-value { font-size: var(--font-size); color: var(--color-text); font-weight: 500; }
+
+    /* 树形结构 */
+    .tree-node { display: flex; align-items: center; gap: var(--margin-xs); padding: 6px 11px; border-radius: var(--border-radius); cursor: pointer; transition: background-color var(--motion-duration-fast) var(--motion-ease-out); }
+    .tree-node:hover { background: var(--control-item-bg-hover); }
+    .tree-node.selected { background: var(--control-item-bg-active); }
+    .tree-children { margin-left: var(--margin); border-left: 1px dashed var(--color-border); padding-left: var(--margin-xs); }
+
+    /* 内联列表项 */
+    .inline-item { display: inline-flex; align-items: center; gap: var(--margin-xs); background: var(--color-bg-container); border: 1px solid var(--color-border); border-radius: var(--border-radius); padding: 6px 11px; font-size: var(--font-size); }
+    .selectable-list { border: 1px solid var(--color-border); border-radius: var(--border-radius); max-height: 260px; overflow-y: auto; }
+    .selectable-list-item { padding: 8px 11px; display: flex; align-items: center; gap: var(--margin-xs); cursor: pointer; transition: background-color var(--motion-duration-fast) var(--motion-ease-out); }
+    .selectable-list-item:hover { background: var(--control-item-bg-hover); }
+
+    /* 分页 */
+    .pagination { display: flex; align-items: center; gap: var(--margin-xs); }
+    .page-btn {
+      height: var(--control-height); min-width: var(--control-height); padding: 0 7px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid var(--color-border); border-radius: var(--border-radius);
+      background: #FFF; color: var(--color-text); font-size: var(--font-size); cursor: pointer;
+      transition: all var(--motion-duration-mid) var(--motion-ease-out);
+    }
+    .page-btn:hover { color: var(--color-primary); border-color: var(--color-primary); }
+    .page-btn.active { background: var(--color-primary); color: #FFF; border-color: var(--color-primary); }
+
+    /* 分隔线 */
+    .divider { width: 1px; background: var(--color-border-secondary); }
+
+    /* 右侧说明面板 */
+    #right-panel {
+      width: 25%;
+      min-width: 280px;
+      max-width: 360px;
+      background: #FFFBE6;
+      border-left: 1px dashed #FFE58F;
+      overflow-y: auto;
+    }
+    .right-panel-inner { padding: var(--margin); }
+
+    .prototype-badge { background: #FFFBE6; border: 1px solid #FFE58F; border-radius: var(--border-radius-lg); padding: var(--margin-sm); margin-bottom: var(--margin); }
+    .badge-label { display: inline-block; padding: 1px 6px; background: #FAAD14; color: #FFF; font-size: 10px; font-weight: bold; border-radius: var(--border-radius-sm); text-transform: uppercase; letter-spacing: 0.05em; }
+    .badge-title { font-size: var(--font-size-sm); font-weight: var(--font-weight-strong); color: #D48806; }
+    .badge-desc { font-size: 11px; color: #D48806; line-height: 1.5; margin: var(--margin-xs) 0 0 0; }
+
+    .right-panel-title { display: flex; align-items: center; gap: var(--margin-xs); font-size: var(--font-size-sm); font-weight: var(--font-weight-strong); color: #D48806; padding-bottom: var(--margin-sm); margin-bottom: var(--margin); border-bottom: 1px solid #FFE58F; }
+
+    /* 连线相关 */
+    .proto-element { position: relative; transition: all var(--motion-duration-mid) var(--motion-ease-out); border-radius: var(--border-radius); }
+    .proto-element:hover { box-shadow: 0 0 0 2px var(--color-primary), 0 4px 12px rgba(22, 119, 255, 0.15); background-color: rgba(22, 119, 255, 0.03); }
+    .proto-element.active-highlight { box-shadow: 0 0 0 2px var(--color-primary), 0 4px 12px rgba(22, 119, 255, 0.2); background-color: rgba(22, 119, 255, 0.05); }
+
+    .proto-desc { transition: all var(--motion-duration-mid) var(--motion-ease-out); border-radius: var(--border-radius); border: 1px solid #FFE58F; background-color: #FFFBF0; }
+    .proto-desc { display: flex; flex-direction: column; align-items: center; text-align: center; padding: var(--margin-lg) var(--margin); }
+    .proto-desc-number { width: 32px; height: 32px; background: #FAAD14; color: #FFF; border-radius: 50%; font-size: var(--font-size); font-weight: bold; display: inline-flex; align-items: center; justify-content: center; margin-bottom: var(--margin-sm); flex-shrink: 0; }
+    .proto-desc-title { font-size: var(--font-size); font-weight: 600; color: var(--color-text); margin-bottom: var(--margin-xs); }
+    .proto-desc-text { font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.6; }
+    .proto-desc-list { list-style: none; padding: 0; margin: var(--margin-xs) 0 0 0; text-align: left; }
+    .proto-desc-list li { position: relative; padding-left: 16px; line-height: 1.7; }
+    .proto-desc-list li::before { content: ''; position: absolute; left: 4px; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: #FAAD14; }
+    .proto-desc:hover { background-color: #FFF3CF; border-color: #FAAD14; box-shadow: 0 2px 8px rgba(250, 173, 20, 0.15); }
+    .proto-desc.active-highlight { background-color: #FFE58F; border-color: #D48806; box-shadow: 0 2px 8px rgba(250, 173, 20, 0.25); }
+
+    #connections { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
+    .connection-line { fill: none; stroke: var(--color-primary); stroke-width: 2; opacity: 0.6; transition: all var(--motion-duration-mid) var(--motion-ease-out); }
+    .connection-line.active { stroke-width: 3; opacity: 1; }
+    .connection-label { fill: #FFF; font-size: var(--font-size-sm); font-weight: bold; text-anchor: middle; dominant-baseline: central; }
+    .connection-label-bg { fill: var(--color-primary); }
+
+    /* 移动端切换按钮 */
+    .mobile-toggle-btn {
+      display: none; position: fixed; bottom: 20px; right: 20px; z-index: 100;
+      width: 48px; height: 48px; border-radius: 50%; background: var(--color-primary); color: #FFF;
+      align-items: center; justify-content: center; box-shadow: var(--box-shadow); cursor: pointer; border: none;
+      transition: all var(--motion-duration-mid) var(--motion-ease-out);
+    }
+    .mobile-toggle-btn:hover { background: var(--color-primary-hover); }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      #app { flex-direction: column; }
+      #left-panel { width: 100% !important; height: 60vh; }
+      .app-sider { display: none; }
+      .divider { display: none; }
+      #right-panel { width: 100% !important; max-width: none; height: 40vh; border-left: none; border-top: 1px dashed #FFE58F; }
+      #connections { display: none; }
+      .mobile-toggle-btn { display: flex; }
+    }
+  </style>
+</head>
+<body class="bg-layout">
+
+  <!-- 移动端切换按钮 -->
+  <button class="mobile-toggle-btn" id="mobileToggle" onclick="toggleMobileView()">
+    <i class="fas fa-info"></i>
+  </button>
+
+  <!-- 主容器 -->
+  <div id="app" class="flex relative">
+
+    <!-- 左侧：产品界面（菜单 + 内容） -->
+    <div id="left-panel" class="flex-1 overflow-y-auto bg-layout relative">
+
+      <!-- 顶部导航栏 -->
+      <header class="app-header">
+        <div class="flex items-center gap-sm">
+          <div class="brand-logo"><i class="fas fa-chart-line"></i></div>
+          <h1 class="brand-title">指标管理平台</h1>
+          <span class="tag tag-gray text-xs" style="margin-left:8px;">系统管理 metric-system</span>
+        </div>
+        <div class="flex items-center gap">
+          <span class="text-sm text-secondary"><i class="fas fa-user-circle mr-xs"></i>超级管理员</span>
+          <button class="icon-btn"><i class="fas fa-bell"></i></button>
+        </div>
+      </header>
+
+      <div class="flex" style="min-height: calc(100vh - var(--header-height));">
+        <!-- 侧边菜单（左边菜单） -->
+        <aside class="app-sider">
+          <div class="sider-section-title">系统管理</div>
+          <nav>
+            <!-- 系统管理父节点 -->
+            <div class="sidebar-menu-item" onclick="toggleSubmenu()" id="sysMenuRoot">
+              <i class="fas fa-cog menu-icon"></i><span>系统管理</span>
+              <i class="fas fa-chevron-down menu-icon" id="chevron" style="margin-left:auto; font-size:10px;"></i>
+            </div>
+            <div class="sider-submenu open" id="sysSubmenu">
+              <!-- ★ 连线 1：用户管理菜单 -->
+              <div class="proto-element sidebar-menu-item active" data-proto-id="u1" data-view="users" onclick="switchView('users')">
+                <i class="fas fa-users menu-icon"></i><span>用户管理</span>
+              </div>
+              <!-- 角色管理菜单 -->
+              <div class="sidebar-menu-item" data-view="roles" onclick="switchView('roles')">
+                <i class="fas fa-user-shield menu-icon"></i><span>角色管理</span>
+              </div>
+              <!-- 部门管理菜单 -->
+              <div class="sidebar-menu-item" data-view="depts" onclick="switchView('depts')">
+                <i class="fas fa-sitemap menu-icon"></i><span>部门管理</span>
+              </div>
+              <!-- 菜单权限菜单 -->
+              <div class="sidebar-menu-item" data-view="menus" onclick="switchView('menus')">
+                <i class="fas fa-list menu-icon"></i><span>菜单权限</span>
+              </div>
+              <!-- 应用接入方菜单 -->
+              <div class="sidebar-menu-item" data-view="apps" onclick="switchView('apps')">
+                <i class="fas fa-plug menu-icon"></i><span>应用接入方</span>
+              </div>
+            </div>
+          </nav>
+        </aside>
+
+        <!-- 主内容区（右边内容） -->
+        <main class="app-main">
+
+          <!-- ================= 视图：用户管理 ================= -->
+          <section id="view-users" class="view-section">
+            <div class="flex items-center justify-between page-header">
+              <div>
+                <h2 class="page-title">用户管理</h2>
+                <p class="page-desc">维护平台用户账号、所属部门与启用状态；密码统一 BCrypt 加密存储，接口响应剥离密码字段。</p>
+              </div>
+              <!-- ★ 连线 2：新增用户按钮 -->
+              <div class="proto-element" data-proto-id="u2">
+                <button onclick="openModal('userAddModal')" class="btn btn-primary"><i class="fas fa-plus"></i> 新增用户</button>
+              </div>
+            </div>
+
+            <!-- 搜索筛选栏 -->
+            <div class="card mb">
+              <div class="card-body">
+                <div class="flex items-center gap-sm flex-wrap">
+                  <input type="text" placeholder="用户名 / 昵称" class="form-input" style="width: 220px;">
+                  <select class="form-select" style="width: 160px;">
+                    <option>全部部门</option>
+                    <option>交易运营部</option>
+                    <option>风险控制部</option>
+                    <option>数据研发部</option>
+                  </select>
+                  <select class="form-select" style="width: 140px;">
+                    <option>全部状态</option>
+                    <option>启用</option>
+                    <option>禁用</option>
+                  </select>
+                  <button class="btn btn-default"><i class="fas fa-search mr-xs"></i>查询</button>
+                  <button class="btn btn-default"><i class="fas fa-redo mr-xs"></i>重置</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ★ 连线 3：用户列表 -->
+            <div class="proto-element card overflow-hidden" data-proto-id="u3">
+              <div class="overflow-x-auto">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>用户名</th>
+                      <th>昵称</th>
+                      <th>所属部门</th>
+                      <th>邮箱</th>
+                      <th>手机号</th>
+                      <th class="text-center">状态</th>
+                      <th class="text-center" style="width:240px;">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="selected">
+                      <td class="font-mono text-primary">admin</td>
+                      <td class="font-medium">超级管理员</td>
+                      <td><span class="tag tag-gray">平台运营中心</span></td>
+                      <td class="text-secondary">admin@metric.com</td>
+                      <td class="text-secondary">138****0001</td>
+                      <td class="text-center"><span class="tag tag-green">启用</span></td>
+                      <td class="text-center">
+                        <button onclick="event.stopPropagation();openModal('userEditModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                        <button onclick="event.stopPropagation();openModal('roleAssignModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">分配角色</button>
+                        <button onclick="event.stopPropagation();openModal('resetPwdModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">重置密码</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="font-mono text-primary">zhangsan</td>
+                      <td class="font-medium">张三</td>
+                      <td><span class="tag tag-gray">数据研发部</span></td>
+                      <td class="text-secondary">zhang@metric.com</td>
+                      <td class="text-secondary">138****0002</td>
+                      <td class="text-center"><span class="tag tag-green">启用</span></td>
+                      <td class="text-center">
+                        <button onclick="event.stopPropagation();openModal('userEditModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                        <button onclick="event.stopPropagation();openModal('roleAssignModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">分配角色</button>
+                        <button onclick="event.stopPropagation();openModal('resetPwdModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">重置密码</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="font-mono text-primary">lisi</td>
+                      <td class="font-medium">李四</td>
+                      <td><span class="tag tag-gray">风险控制部</span></td>
+                      <td class="text-secondary">li@metric.com</td>
+                      <td class="text-secondary">138****0003</td>
+                      <td class="text-center"><span class="tag tag-red">禁用</span></td>
+                      <td class="text-center">
+                        <button onclick="event.stopPropagation();openModal('userEditModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                        <button onclick="event.stopPropagation();openModal('roleAssignModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">分配角色</button>
+                        <button onclick="event.stopPropagation();openModal('resetPwdModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">重置密码</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="flex items-center justify-between px-lg py-sm" style="border-top: 1px solid var(--color-border-secondary);">
+                <span class="text-sm text-secondary">共 3 条记录</span>
+                <div class="pagination">
+                  <button class="page-btn">上一页</button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn">下一页</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ★ 连线 4：操作列（分配角色 / 重置密码） -->
+            <div class="mt-lg text-center text-sm text-quaternary" data-proto-id="u4">
+              <i class="fas fa-hand-pointer mr-xs"></i>「分配角色」重写 sys_user_role 绑定；「重置密码」BCrypt 加密后落库
+            </div>
+          </section>
+
+          <!-- ================= 视图：角色管理 ================= -->
+          <section id="view-roles" class="view-section" style="display:none;">
+            <div class="flex items-center justify-between page-header">
+              <div>
+                <h2 class="page-title">角色管理</h2>
+                <p class="page-desc">定义角色及其数据范围（全部 / 自定义 / 本部门），并分配菜单权限与关联用户。</p>
+              </div>
+              <div class="proto-element" data-proto-id="r1">
+                <button onclick="openModal('roleAddModal')" class="btn btn-primary"><i class="fas fa-plus"></i> 新增角色</button>
+              </div>
+            </div>
+
+            <div class="card mb">
+              <div class="card-body">
+                <div class="flex items-center gap-sm flex-wrap">
+                  <input type="text" placeholder="角色名称 / 角色标识" class="form-input" style="width: 240px;">
+                  <select class="form-select" style="width: 160px;">
+                    <option>全部数据范围</option>
+                    <option>全部数据</option>
+                    <option>自定义数据</option>
+                    <option>本部门数据</option>
+                  </select>
+                  <button class="btn btn-default"><i class="fas fa-search mr-xs"></i>查询</button>
+                  <button class="btn btn-default"><i class="fas fa-redo mr-xs"></i>重置</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="proto-element card overflow-hidden" data-proto-id="r2">
+              <div class="overflow-x-auto">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>角色名称</th>
+                      <th>角色标识</th>
+                      <th>数据范围</th>
+                      <th class="text-center">状态</th>
+                      <th class="text-center" style="width:260px;">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="selected">
+                      <td class="font-medium">平台管理员</td>
+                      <td class="font-mono text-primary">ADMIN</td>
+                      <td><span class="tag tag-blue">全部数据</span></td>
+                      <td class="text-center"><span class="tag tag-green">启用</span></td>
+                      <td class="text-center">
+                        <button onclick="event.stopPropagation();openModal('roleEditModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                        <button onclick="event.stopPropagation();openModal('menuAssignModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">分配菜单</button>
+                        <button onclick="event.stopPropagation();openModal('userAssignModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">分配用户</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="font-medium">指标编辑</td>
+                      <td class="font-mono text-primary">METRIC_EDITOR</td>
+                      <td><span class="tag tag-purple">本部门数据</span></td>
+                      <td class="text-center"><span class="tag tag-green">启用</span></td>
+                      <td class="text-center">
+                        <button onclick="event.stopPropagation();openModal('roleEditModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                        <button onclick="event.stopPropagation();openModal('menuAssignModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">分配菜单</button>
+                        <button onclick="event.stopPropagation();openModal('userAssignModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">分配用户</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="font-medium">只读访客</td>
+                      <td class="font-mono text-primary">READONLY</td>
+                      <td><span class="tag tag-purple">自定义数据</span></td>
+                      <td class="text-center"><span class="tag tag-gray">禁用</span></td>
+                      <td class="text-center">
+                        <button onclick="event.stopPropagation();openModal('roleEditModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                        <button onclick="event.stopPropagation();openModal('menuAssignModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">分配菜单</button>
+                        <button onclick="event.stopPropagation();openModal('userAssignModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">分配用户</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="flex items-center justify-between px-lg py-sm" style="border-top: 1px solid var(--color-border-secondary);">
+                <span class="text-sm text-secondary">共 3 条记录</span>
+                <div class="pagination">
+                  <button class="page-btn">上一页</button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn">下一页</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-lg text-center text-sm text-quaternary" data-proto-id="r3">
+              <i class="fas fa-hand-pointer mr-xs"></i>「分配菜单」重写 sys_role_menu；「分配用户」重写 sys_user_role（物理删除 + 重新插入）
+            </div>
+          </section>
+
+          <!-- ================= 视图：部门管理 ================= -->
+          <section id="view-depts" class="view-section" style="display:none;">
+            <div class="flex items-center justify-between page-header">
+              <div>
+                <h2 class="page-title">部门管理</h2>
+                <p class="page-desc">维护组织部门树，为用户归属与后续数据权限（data_scope）提供部门维度基础。</p>
+              </div>
+              <div class="proto-element" data-proto-id="d1">
+                <button onclick="openModal('deptAddModal')" class="btn btn-primary"><i class="fas fa-plus"></i> 新增部门</button>
+              </div>
+            </div>
+
+            <div class="proto-element card overflow-hidden" data-proto-id="d2">
+              <div class="grid" style="grid-template-columns: 280px 1fr; min-height: 420px;">
+                <!-- 左侧部门树 -->
+                <div style="border-right: 1px solid var(--color-border-secondary); padding: var(--margin);">
+                  <div class="info-block-title mb-sm" style="margin-bottom:var(--margin-xs);"><i class="fas fa-sitemap text-primary"></i>部门树</div>
+                  <div class="tree-node selected"><i class="fas fa-building text-tertiary"></i><span class="font-medium">平台运营中心</span></div>
+                  <div class="tree-children">
+                    <div class="tree-node"><i class="fas fa-users text-tertiary"></i><span>数据研发部</span></div>
+                    <div class="tree-node"><i class="fas fa-shield-alt text-tertiary"></i><span>风险控制部</span></div>
+                    <div class="tree-node"><i class="fas fa-chart-line text-tertiary"></i><span>交易运营部</span></div>
+                  </div>
+                </div>
+                <!-- 右侧明细 -->
+                <div style="padding: var(--margin);">
+                  <div class="flex items-center justify-between mb">
+                    <h3 class="proto-desc-title" style="margin:0;">平台运营中心 下级部门</h3>
+                  </div>
+                  <table class="data-table">
+                    <thead>
+                      <tr><th>部门名称</th><th>排序</th><th class="text-center">状态</th><th class="text-center">操作</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr class="selected">
+                        <td class="font-medium">数据研发部</td>
+                        <td class="text-secondary">1</td>
+                        <td class="text-center"><span class="tag tag-green">启用</span></td>
+                        <td class="text-center">
+                          <button onclick="event.stopPropagation();openModal('deptEditModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="font-medium">风险控制部</td>
+                        <td class="text-secondary">2</td>
+                        <td class="text-center"><span class="tag tag-green">启用</span></td>
+                        <td class="text-center">
+                          <button onclick="event.stopPropagation();openModal('deptEditModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="font-medium">交易运营部</td>
+                        <td class="text-secondary">3</td>
+                        <td class="text-center"><span class="tag tag-gray">禁用</span></td>
+                        <td class="text-center">
+                          <button onclick="event.stopPropagation();openModal('deptEditModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-lg text-center text-sm text-quaternary" data-proto-id="d3">
+              <i class="fas fa-hand-pointer mr-xs"></i>部门树按 parent_id 内存递归组装；点击节点切换右侧明细
+            </div>
+          </section>
+
+          <!-- ================= 视图：菜单权限 ================= -->
+          <section id="view-menus" class="view-section" style="display:none;">
+            <div class="flex items-center justify-between page-header">
+              <div>
+                <h2 class="page-title">菜单权限</h2>
+                <p class="page-desc">维护菜单树与按钮权限（perms），是全平台接口鉴权 @RequirePermission 的权限基准。</p>
+              </div>
+              <div class="proto-element" data-proto-id="m1">
+                <button onclick="openModal('menuAddModal')" class="btn btn-primary"><i class="fas fa-plus"></i> 新增菜单</button>
+              </div>
+            </div>
+
+            <div class="proto-element card overflow-hidden" data-proto-id="m2">
+              <div class="overflow-x-auto">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>菜单名称</th>
+                      <th>类型</th>
+                      <th>权限标识</th>
+                      <th>路由路径</th>
+                      <th class="text-center">排序</th>
+                      <th class="text-center">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="selected">
+                      <td class="font-medium"><i class="fas fa-cog text-tertiary mr-xs"></i>系统管理</td>
+                      <td><span class="tag tag-gray">目录</span></td>
+                      <td class="font-mono text-quaternary">—</td>
+                      <td class="font-mono text-secondary">/system</td>
+                      <td class="text-center text-secondary">1</td>
+                      <td class="text-center">
+                        <button onclick="event.stopPropagation();openModal('menuEditModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="font-medium" style="padding-left:32px;"><i class="fas fa-users text-tertiary mr-xs"></i>用户管理</td>
+                      <td><span class="tag tag-blue">菜单</span></td>
+                      <td class="font-mono text-primary">user:view</td>
+                      <td class="font-mono text-secondary">/system/users</td>
+                      <td class="text-center text-secondary">2</td>
+                      <td class="text-center">
+                        <button onclick="event.stopPropagation();openModal('menuEditModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="font-medium" style="padding-left:56px;"><i class="fas fa-plus-circle text-tertiary mr-xs"></i>新增用户</td>
+                      <td><span class="tag tag-warning">按钮</span></td>
+                      <td class="font-mono text-primary">user:create</td>
+                      <td class="font-mono text-quaternary">—</td>
+                      <td class="text-center text-secondary">3</td>
+                      <td class="text-center">
+                        <button onclick="event.stopPropagation();openModal('menuEditModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="font-medium" style="padding-left:32px;"><i class="fas fa-user-shield text-tertiary mr-xs"></i>角色管理</td>
+                      <td><span class="tag tag-blue">菜单</span></td>
+                      <td class="font-mono text-primary">role:view</td>
+                      <td class="font-mono text-secondary">/system/roles</td>
+                      <td class="text-center text-secondary">4</td>
+                      <td class="text-center">
+                        <button onclick="event.stopPropagation();openModal('menuEditModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="mt-lg text-center text-sm text-quaternary" data-proto-id="m3">
+              <i class="fas fa-hand-pointer mr-xs"></i>perms 格式为 resource:action，仅 type=F（按钮）或显式权限行承载，与 @RequirePermission 同源维护
+            </div>
+          </section>
+
+          <!-- ================= 视图：应用接入方 ================= -->
+          <section id="view-apps" class="view-section" style="display:none;">
+            <div class="flex items-center justify-between page-header">
+              <div>
+                <h2 class="page-title">应用接入方</h2>
+                <p class="page-desc">管理外部接入应用的编码、负责人与密钥；app_code 作为平台级维度键。</p>
+              </div>
+              <div class="proto-element" data-proto-id="a1">
+                <button onclick="openModal('appAddModal')" class="btn btn-primary"><i class="fas fa-plus"></i> 新增应用</button>
+              </div>
+            </div>
+
+            <div class="card mb">
+              <div class="card-body">
+                <div class="flex items-center gap-sm flex-wrap">
+                  <input type="text" placeholder="应用编码 / 名称" class="form-input" style="width: 240px;">
+                  <select class="form-select" style="width: 140px;">
+                    <option>全部状态</option>
+                    <option>启用</option>
+                    <option>禁用</option>
+                  </select>
+                  <button class="btn btn-default"><i class="fas fa-search mr-xs"></i>查询</button>
+                  <button class="btn btn-default"><i class="fas fa-redo mr-xs"></i>重置</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="proto-element card overflow-hidden" data-proto-id="a2">
+              <div class="overflow-x-auto">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>应用编码</th>
+                      <th>应用名称</th>
+                      <th>负责人</th>
+                      <th class="text-center">状态</th>
+                      <th class="text-center" style="width:200px;">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="selected">
+                      <td class="font-mono text-primary">APP-REPORT</td>
+                      <td class="font-medium">报表上报服务</td>
+                      <td class="text-secondary">王五</td>
+                      <td class="text-center"><span class="tag tag-green">启用</span></td>
+                      <td class="text-center">
+                        <button onclick="event.stopPropagation();openModal('appEditModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                        <button onclick="event.stopPropagation();openModal('appSecretModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">轮换密钥</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="font-mono text-primary">APP-ETL</td>
+                      <td class="font-medium">数据集成服务</td>
+                      <td class="text-secondary">赵六</td>
+                      <td class="text-center"><span class="tag tag-green">启用</span></td>
+                      <td class="text-center">
+                        <button onclick="event.stopPropagation();openModal('appEditModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                        <button onclick="event.stopPropagation();openModal('appSecretModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">轮换密钥</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="font-mono text-primary">APP-LEGACY</td>
+                      <td class="font-medium">遗留对接系统</td>
+                      <td class="text-secondary">钱七</td>
+                      <td class="text-center"><span class="tag tag-gray">禁用</span></td>
+                      <td class="text-center">
+                        <button onclick="event.stopPropagation();openModal('appEditModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">编辑</button>
+                        <button onclick="event.stopPropagation();openModal('appSecretModal')" class="btn btn-sm btn-default text-primary" style="border-color:transparent;padding:0 6px;">轮换密钥</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="flex items-center justify-between px-lg py-sm" style="border-top: 1px solid var(--color-border-secondary);">
+                <span class="text-sm text-secondary">共 3 条记录</span>
+                <div class="pagination">
+                  <button class="page-btn">上一页</button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn">下一页</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-lg text-center text-sm text-quaternary" data-proto-id="a3">
+              <i class="fas fa-hand-pointer mr-xs"></i>「轮换密钥」对 secret 重新 BCrypt 加密；app_code 为平台级维度键
+            </div>
+          </section>
+
+        </main>
+      </div>
+    </div>
+
+    <!-- 分隔线 -->
+    <div class="divider" id="divider"></div>
+
+    <!-- 右侧：功能说明 -->
+    <div id="right-panel">
+      <div class="right-panel-inner">
+        <!-- 原型说明标识 -->
+        <div class="prototype-badge">
+          <div class="flex items-center gap-xs mb-xs">
+            <span class="badge-label">Prototype</span>
+            <span class="badge-title">原型说明</span>
+          </div>
+          <p class="badge-desc">
+            以下内容为界面元素的功能说明，与左侧编号一一对应。悬停左侧区域可高亮连线。
+          </p>
+        </div>
+
+        <div class="right-panel-title">
+          <i class="fas fa-map-signs" style="color: #FAAD14;"></i>
+          <span>功能说明（metric-system）</span>
+        </div>
+
+        <!-- 用户管理说明 -->
+        <div id="desc-users" class="desc-group flex flex-col gap-sm">
+          <div class="proto-desc active-highlight" data-proto-id="u1">
+            <span class="proto-desc-number">1</span>
+            <h3 class="proto-desc-title">用户管理入口</h3>
+            <p class="proto-desc-text">系统管理核心子模块。维护用户账号、所属部门与启用状态，为全平台提供用户维度基础（对应表 sys_user）。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="u2">
+            <span class="proto-desc-number">2</span>
+            <h3 class="proto-desc-title">新增用户</h3>
+            <p class="proto-desc-text">创建账号时密码必须由 BCrypt 加密后落库；响应 DTO 统一剥离 password 字段，不回传明文或密文。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="u3">
+            <span class="proto-desc-number">3</span>
+            <h3 class="proto-desc-title">用户列表</h3>
+            <p class="proto-desc-text">展示用户名、昵称、所属部门、邮箱、手机号与状态。列表不展示密码；id 由 SnowflakeId 生成，软删除通过 deleted_at 维护。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="u4">
+            <span class="proto-desc-number">4</span>
+            <h3 class="proto-desc-title">分配角色 / 重置密码</h3>
+            <p class="proto-desc-text">assignRoles 重写 sys_user_role（先删后插）；resetPassword 对新密码 BCrypt 加密后更新。关系表采用物理删除，应用层维护。</p>
+          </div>
+        </div>
+
+        <!-- 角色管理说明 -->
+        <div id="desc-roles" class="desc-group flex flex-col gap-sm" style="display:none;">
+          <div class="proto-desc active-highlight" data-proto-id="r1">
+            <span class="proto-desc-number">1</span>
+            <h3 class="proto-desc-title">新增角色</h3>
+            <p class="proto-desc-text">创建角色并设定 data_scope（全部 / 自定义 / 本部门）。data_scope 当前仅落库存储，绑定逻辑后续实现（对应表 sys_role）。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="r2">
+            <span class="proto-desc-number">2</span>
+            <h3 class="proto-desc-title">角色列表</h3>
+            <p class="proto-desc-text">展示角色名称、标识与数据范围。role_key 唯一；状态 0/1 与全局 StatusEnum 一致。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="r3">
+            <span class="proto-desc-number">3</span>
+            <h3 class="proto-desc-title">分配菜单 / 分配用户</h3>
+            <p class="proto-desc-text">assignMenus 重写 sys_role_menu；assignUsers 重写 sys_user_role。均为「清除旧绑定后重新插入」，关系表物理删除。</p>
+          </div>
+        </div>
+
+        <!-- 部门管理说明 -->
+        <div id="desc-depts" class="desc-group flex flex-col gap-sm" style="display:none;">
+          <div class="proto-desc active-highlight" data-proto-id="d1">
+            <span class="proto-desc-number">1</span>
+            <h3 class="proto-desc-title">新增部门</h3>
+            <p class="proto-desc-text">创建部门并指定上级部门（parent_id）与排序。为用户的部门归属与后续数据权限提供组织维度（对应表 sys_dept）。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="d2">
+            <span class="proto-desc-number">2</span>
+            <h3 class="proto-desc-title">部门树 + 明细</h3>
+            <p class="proto-desc-text">左侧树按 parent_id 内存递归组装 List&lt;DeptTreeNode&gt;；点击节点切换右侧该部门下级列表。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="d3">
+            <span class="proto-desc-number">3</span>
+            <h3 class="proto-desc-title">数据加载策略</h3>
+            <p class="proto-desc-text">部门数据量有限，全量加载后在内存递归组装，无需分页或懒加载，性能可接受。</p>
+          </div>
+        </div>
+
+        <!-- 菜单权限说明 -->
+        <div id="desc-menus" class="desc-group flex flex-col gap-sm" style="display:none;">
+          <div class="proto-desc active-highlight" data-proto-id="m1">
+            <span class="proto-desc-number">1</span>
+            <h3 class="proto-desc-title">新增菜单</h3>
+            <p class="proto-desc-text">维护菜单 / 目录 / 按钮节点（type=M/C/F），设定 perms、path、component、order_no（对应表 sys_menu）。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="m2">
+            <span class="proto-desc-number">2</span>
+            <h3 class="proto-desc-title">菜单权限树</h3>
+            <p class="proto-desc-text">以树形表格展示层级。M/C 仅承载结构，F（按钮）或显式权限行承载 perms 标识。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="m3">
+            <span class="proto-desc-number">3</span>
+            <h3 class="proto-desc-title">权限基准</h3>
+            <p class="proto-desc-text">sys_menu.perms 是全平台接口权限基准；@RequirePermission(resource, action) 与其同源维护，避免权限漂移。</p>
+          </div>
+        </div>
+
+        <!-- 应用接入方说明 -->
+        <div id="desc-apps" class="desc-group flex flex-col gap-sm" style="display:none;">
+          <div class="proto-desc active-highlight" data-proto-id="a1">
+            <span class="proto-desc-number">1</span>
+            <h3 class="proto-desc-title">新增应用</h3>
+            <p class="proto-desc-text">登记外部接入方：app_code（唯一、平台级维度键）、name、owner；secret 可选 BCrypt 加密（对应表 sys_app）。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="a2">
+            <span class="proto-desc-number">2</span>
+            <h3 class="proto-desc-title">应用列表</h3>
+            <p class="proto-desc-text">展示应用编码、名称、负责人与状态。app_code 用于标识调用来源，供指标值上报等场景做维度归属。</p>
+          </div>
+          <div class="proto-desc" data-proto-id="a3">
+            <span class="proto-desc-number">3</span>
+            <h3 class="proto-desc-title">轮换密钥</h3>
+            <p class="proto-desc-text">rotateSecret 对 secret 重新 BCrypt 加密（可选传入新值），兼顾安全合规与可追溯。</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- SVG 连线层 -->
+  <svg id="connections" class="absolute top-0 left-0 w-full h-full" style="pointer-events: none;"></svg>
+
+  <!-- ========== 模态框：新增用户 ========== -->
+  <div id="userAddModal" class="modal-overlay modal-hidden">
+    <div class="modal-content">
+      <div class="modal-header"><h3 class="modal-title">新增用户</h3><button onclick="closeModal('userAddModal')" class="icon-btn"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body">
+        <div class="form-group"><label class="form-label">用户名 <span class="required">*</span></label><input type="text" placeholder="登录用户名" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">昵称</label><input type="text" placeholder="显示昵称" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">所属部门 <span class="required">*</span></label>
+          <select class="form-select w-full"><option>请选择</option><option>数据研发部</option><option>风险控制部</option><option>交易运营部</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">密码 <span class="required">*</span></label><input type="password" placeholder="创建后 BCrypt 加密存储" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">邮箱</label><input type="text" placeholder="name@metric.com" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">手机号</label><input type="text" placeholder="11 位手机号" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">状态</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="u_status" checked style="accent-color:#1677FF;"><span>启用</span></label>
+            <label class="radio-label"><input type="radio" name="u_status" style="accent-color:#1677FF;"><span>禁用</span></label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer"><button onclick="closeModal('userAddModal')" class="btn btn-default">取消</button><button onclick="closeModal('userAddModal');toast('用户创建成功')" class="btn btn-primary">保存</button></div>
+    </div>
+  </div>
+
+  <!-- ========== 模态框：编辑用户 ========== -->
+  <div id="userEditModal" class="modal-overlay modal-hidden">
+    <div class="modal-content">
+      <div class="modal-header"><h3 class="modal-title">编辑用户</h3><button onclick="closeModal('userEditModal')" class="icon-btn"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body">
+        <div class="form-group"><label class="form-label">用户名</label><input type="text" value="admin" disabled class="form-input w-full" style="background:var(--color-bg-container-disabled);color:var(--color-text-disabled);cursor:not-allowed;"></div>
+        <div class="form-group"><label class="form-label">昵称</label><input type="text" value="超级管理员" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">所属部门</label>
+          <select class="form-select w-full"><option selected>平台运营中心</option><option>数据研发部</option><option>风险控制部</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">状态</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="ue_status" checked style="accent-color:#1677FF;"><span>启用</span></label>
+            <label class="radio-label"><input type="radio" name="ue_status" style="accent-color:#1677FF;"><span>禁用</span></label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer"><button onclick="closeModal('userEditModal')" class="btn btn-default">取消</button><button onclick="closeModal('userEditModal');toast('用户更新成功')" class="btn btn-primary">保存</button></div>
+    </div>
+  </div>
+
+  <!-- ========== 模态框：分配角色 ========== -->
+  <div id="roleAssignModal" class="modal-overlay modal-hidden">
+    <div class="modal-content" style="max-width:440px;">
+      <div class="modal-header"><h3 class="modal-title">分配角色</h3><button onclick="closeModal('roleAssignModal')" class="icon-btn"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body">
+        <label class="form-label">为用户 admin 选择角色（重写绑定）</label>
+        <div class="selectable-list">
+          <div class="selectable-list-item"><input type="checkbox" checked style="accent-color:#1677FF;"><span class="text-sm">平台管理员（ADMIN）</span></div>
+          <div class="selectable-list-item"><input type="checkbox" style="accent-color:#1677FF;"><span class="text-sm">指标编辑（METRIC_EDITOR）</span></div>
+          <div class="selectable-list-item"><input type="checkbox" style="accent-color:#1677FF;"><span class="text-sm">只读访客（READONLY）</span></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button onclick="closeModal('roleAssignModal')" class="btn btn-default">取消</button><button onclick="closeModal('roleAssignModal');toast('角色绑定已更新')" class="btn btn-primary">确定</button></div>
+    </div>
+  </div>
+
+  <!-- ========== 模态框：重置密码 ========== -->
+  <div id="resetPwdModal" class="modal-overlay modal-hidden">
+    <div class="modal-content" style="max-width:420px;">
+      <div class="modal-header"><h3 class="modal-title">重置密码</h3><button onclick="closeModal('resetPwdModal')" class="icon-btn"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body">
+        <div class="form-group"><label class="form-label">新密码 <span class="required">*</span></label><input type="password" placeholder="BCrypt 加密后更新" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">确认密码 <span class="required">*</span></label><input type="password" placeholder="再次输入新密码" class="form-input w-full"></div>
+      </div>
+      <div class="modal-footer"><button onclick="closeModal('resetPwdModal')" class="btn btn-default">取消</button><button onclick="closeModal('resetPwdModal');toast('密码已重置')" class="btn btn-primary">确定</button></div>
+    </div>
+  </div>
+
+  <!-- ========== 模态框：新增角色 ========== -->
+  <div id="roleAddModal" class="modal-overlay modal-hidden">
+    <div class="modal-content">
+      <div class="modal-header"><h3 class="modal-title">新增角色</h3><button onclick="closeModal('roleAddModal')" class="icon-btn"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body">
+        <div class="form-group"><label class="form-label">角色名称 <span class="required">*</span></label><input type="text" placeholder="如：指标编辑" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">角色标识 <span class="required">*</span></label><input type="text" placeholder="如：METRIC_EDITOR（唯一）" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">数据范围</label>
+          <select class="form-select w-full"><option>全部数据（ALL）</option><option>自定义数据（CUSTOM）</option><option>本部门数据（DEPT）</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">状态</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="r_status" checked style="accent-color:#1677FF;"><span>启用</span></label>
+            <label class="radio-label"><input type="radio" name="r_status" style="accent-color:#1677FF;"><span>禁用</span></label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer"><button onclick="closeModal('roleAddModal')" class="btn btn-default">取消</button><button onclick="closeModal('roleAddModal');toast('角色创建成功')" class="btn btn-primary">保存</button></div>
+    </div>
+  </div>
+
+  <!-- ========== 模态框：编辑角色 ========== -->
+  <div id="roleEditModal" class="modal-overlay modal-hidden">
+    <div class="modal-content">
+      <div class="modal-header"><h3 class="modal-title">编辑角色</h3><button onclick="closeModal('roleEditModal')" class="icon-btn"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body">
+        <div class="form-group"><label class="form-label">角色名称</label><input type="text" value="平台管理员" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">角色标识</label><input type="text" value="ADMIN" disabled class="form-input w-full" style="background:var(--color-bg-container-disabled);color:var(--color-text-disabled);cursor:not-allowed;"></div>
+        <div class="form-group"><label class="form-label">数据范围</label>
+          <select class="form-select w-full"><option selected>全部数据（ALL）</option><option>自定义数据（CUSTOM）</option><option>本部门数据（DEPT）</option></select>
+        </div>
+      </div>
+      <div class="modal-footer"><button onclick="closeModal('roleEditModal')" class="btn btn-default">取消</button><button onclick="closeModal('roleEditModal');toast('角色更新成功')" class="btn btn-primary">保存</button></div>
+    </div>
+  </div>
+
+  <!-- ========== 模态框：分配菜单 ========== -->
+  <div id="menuAssignModal" class="modal-overlay modal-hidden">
+    <div class="modal-content modal-wide">
+      <div class="modal-header"><h3 class="modal-title">分配菜单权限</h3><button onclick="closeModal('menuAssignModal')" class="icon-btn"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body">
+        <label class="form-label">为角色「平台管理员」勾选菜单（重写 sys_role_menu）</label>
+        <div class="selectable-list" style="max-height:320px;">
+          <div class="selectable-list-item"><input type="checkbox" checked style="accent-color:#1677FF;"><span class="text-sm"><i class="fas fa-cog mr-xs"></i>系统管理（目录）</span></div>
+          <div class="selectable-list-item" style="padding-left:32px;"><input type="checkbox" checked style="accent-color:#1677FF;"><span class="text-sm"><i class="fas fa-users mr-xs"></i>用户管理</span></div>
+          <div class="selectable-list-item" style="padding-left:56px;"><input type="checkbox" checked style="accent-color:#1677FF;"><span class="text-sm">新增用户（user:create）</span></div>
+          <div class="selectable-list-item" style="padding-left:32px;"><input type="checkbox" checked style="accent-color:#1677FF;"><span class="text-sm"><i class="fas fa-user-shield mr-xs"></i>角色管理</span></div>
+          <div class="selectable-list-item"><input type="checkbox" checked style="accent-color:#1677FF;"><span class="text-sm"><i class="fas fa-sitemap mr-xs"></i>部门管理</span></div>
+          <div class="selectable-list-item"><input type="checkbox" checked style="accent-color:#1677FF;"><span class="text-sm"><i class="fas fa-plug mr-xs"></i>应用接入方</span></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button onclick="closeModal('menuAssignModal')" class="btn btn-default">取消</button><button onclick="closeModal('menuAssignModal');toast('菜单权限已更新')" class="btn btn-primary">确定</button></div>
+    </div>
+  </div>
+
+  <!-- ========== 模态框：分配用户 ========== -->
+  <div id="userAssignModal" class="modal-overlay modal-hidden">
+    <div class="modal-content modal-wide">
+      <div class="modal-header"><h3 class="modal-title">分配用户</h3><button onclick="closeModal('userAssignModal')" class="icon-btn"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body">
+        <label class="form-label">为角色「平台管理员」勾选用户（重写 sys_user_role）</label>
+        <div class="selectable-list">
+          <div class="selectable-list-item"><input type="checkbox" checked style="accent-color:#1677FF;"><span class="text-sm">admin（超级管理员）</span></div>
+          <div class="selectable-list-item"><input type="checkbox" style="accent-color:#1677FF;"><span class="text-sm">zhangsan（张三）</span></div>
+          <div class="selectable-list-item"><input type="checkbox" style="accent-color:#1677FF;"><span class="text-sm">lisi（李四）</span></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button onclick="closeModal('userAssignModal')" class="btn btn-default">取消</button><button onclick="closeModal('userAssignModal');toast('用户绑定已更新')" class="btn btn-primary">确定</button></div>
+    </div>
+  </div>
+
+  <!-- ========== 模态框：新增部门 ========== -->
+  <div id="deptAddModal" class="modal-overlay modal-hidden">
+    <div class="modal-content">
+      <div class="modal-header"><h3 class="modal-title">新增部门</h3><button onclick="closeModal('deptAddModal')" class="icon-btn"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body">
+        <div class="form-group"><label class="form-label">部门名称 <span class="required">*</span></label><input type="text" placeholder="如：数据分析部" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">上级部门</label>
+          <select class="form-select w-full"><option>平台运营中心（根）</option><option>数据研发部</option><option>风险控制部</option><option>交易运营部</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">排序</label><input type="number" value="4" min="1" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">状态</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="d_status" checked style="accent-color:#1677FF;"><span>启用</span></label>
+            <label class="radio-label"><input type="radio" name="d_status" style="accent-color:#1677FF;"><span>禁用</span></label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer"><button onclick="closeModal('deptAddModal')" class="btn btn-default">取消</button><button onclick="closeModal('deptAddModal');toast('部门创建成功')" class="btn btn-primary">保存</button></div>
+    </div>
+  </div>
+
+  <!-- ========== 模态框：编辑部门 ========== -->
+  <div id="deptEditModal" class="modal-overlay modal-hidden">
+    <div class="modal-content">
+      <div class="modal-header"><h3 class="modal-title">编辑部门</h3><button onclick="closeModal('deptEditModal')" class="icon-btn"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body">
+        <div class="form-group"><label class="form-label">部门名称</label><input type="text" value="数据研发部" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">上级部门</label>
+          <select class="form-select w-full"><option selected>平台运营中心（根）</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">排序</label><input type="number" value="1" min="1" class="form-input w-full"></div>
+      </div>
+      <div class="modal-footer"><button onclick="closeModal('deptEditModal')" class="btn btn-default">取消</button><button onclick="closeModal('deptEditModal');toast('部门更新成功')" class="btn btn-primary">保存</button></div>
+    </div>
+  </div>
+
+  <!-- ========== 模态框：新增菜单 ========== -->
+  <div id="menuAddModal" class="modal-overlay modal-hidden">
+    <div class="modal-content">
+      <div class="modal-header"><h3 class="modal-title">新增菜单</h3><button onclick="closeModal('menuAddModal')" class="icon-btn"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body">
+        <div class="form-group"><label class="form-label">菜单名称 <span class="required">*</span></label><input type="text" placeholder="如：指标编目" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">上级菜单</label>
+          <select class="form-select w-full"><option>无（根目录）</option><option>系统管理</option><option>用户管理</option><option>角色管理</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">类型</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="m_type" checked style="accent-color:#1677FF;"><span>目录(M)</span></label>
+            <label class="radio-label"><input type="radio" name="m_type" style="accent-color:#1677FF;"><span>菜单(C)</span></label>
+            <label class="radio-label"><input type="radio" name="m_type" style="accent-color:#1677FF;"><span>按钮(F)</span></label>
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">权限标识（perms）</label><input type="text" placeholder="如：catalog:view" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">路由路径</label><input type="text" placeholder="如：/catalog" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">排序</label><input type="number" value="1" min="1" class="form-input w-full"></div>
+      </div>
+      <div class="modal-footer"><button onclick="closeModal('menuAddModal')" class="btn btn-default">取消</button><button onclick="closeModal('menuAddModal');toast('菜单创建成功')" class="btn btn-primary">保存</button></div>
+    </div>
+  </div>
+
+  <!-- ========== 模态框：编辑菜单 ========== -->
+  <div id="menuEditModal" class="modal-overlay modal-hidden">
+    <div class="modal-content">
+      <div class="modal-header"><h3 class="modal-title">编辑菜单</h3><button onclick="closeModal('menuEditModal')" class="icon-btn"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body">
+        <div class="form-group"><label class="form-label">菜单名称</label><input type="text" value="用户管理" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">权限标识（perms）</label><input type="text" value="user:view" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">路由路径</label><input type="text" value="/system/users" class="form-input w-full"></div>
+      </div>
+      <div class="modal-footer"><button onclick="closeModal('menuEditModal')" class="btn btn-default">取消</button><button onclick="closeModal('menuEditModal');toast('菜单更新成功')" class="btn btn-primary">保存</button></div>
+    </div>
+  </div>
+
+  <!-- ========== 模态框：新增应用 ========== -->
+  <div id="appAddModal" class="modal-overlay modal-hidden">
+    <div class="modal-content">
+      <div class="modal-header"><h3 class="modal-title">新增应用</h3><button onclick="closeModal('appAddModal')" class="icon-btn"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body">
+        <div class="form-group"><label class="form-label">应用编码 <span class="required">*</span></label><input type="text" placeholder="如：APP-REPORT（唯一）" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">应用名称 <span class="required">*</span></label><input type="text" placeholder="如：报表上报服务" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">负责人</label><input type="text" placeholder="负责人姓名" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">密钥（secret）</label><input type="text" placeholder="留空则自动生成并 BCrypt 加密" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">状态</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="a_status" checked style="accent-color:#1677FF;"><span>启用</span></label>
+            <label class="radio-label"><input type="radio" name="a_status" style="accent-color:#1677FF;"><span>禁用</span></label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer"><button onclick="closeModal('appAddModal')" class="btn btn-default">取消</button><button onclick="closeModal('appAddModal');toast('应用创建成功')" class="btn btn-primary">保存</button></div>
+    </div>
+  </div>
+
+  <!-- ========== 模态框：编辑应用 ========== -->
+  <div id="appEditModal" class="modal-overlay modal-hidden">
+    <div class="modal-content">
+      <div class="modal-header"><h3 class="modal-title">编辑应用</h3><button onclick="closeModal('appEditModal')" class="icon-btn"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body">
+        <div class="form-group"><label class="form-label">应用编码</label><input type="text" value="APP-REPORT" disabled class="form-input w-full" style="background:var(--color-bg-container-disabled);color:var(--color-text-disabled);cursor:not-allowed;"></div>
+        <div class="form-group"><label class="form-label">应用名称</label><input type="text" value="报表上报服务" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">负责人</label><input type="text" value="王五" class="form-input w-full"></div>
+        <div class="form-group"><label class="form-label">状态</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="ae_status" checked style="accent-color:#1677FF;"><span>启用</span></label>
+            <label class="radio-label"><input type="radio" name="ae_status" style="accent-color:#1677FF;"><span>禁用</span></label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer"><button onclick="closeModal('appEditModal')" class="btn btn-default">取消</button><button onclick="closeModal('appEditModal');toast('应用更新成功')" class="btn btn-primary">保存</button></div>
+    </div>
+  </div>
+
+  <!-- ========== 模态框：轮换密钥 ========== -->
+  <div id="appSecretModal" class="modal-overlay modal-hidden">
+    <div class="modal-content" style="max-width:460px;">
+      <div class="modal-header"><h3 class="modal-title">轮换密钥</h3><button onclick="closeModal('appSecretModal')" class="icon-btn"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body">
+        <div class="form-group"><label class="form-label">应用</label><input type="text" value="APP-REPORT · 报表上报服务" disabled class="form-input w-full" style="background:var(--color-bg-container-disabled);color:var(--color-text-disabled);cursor:not-allowed;"></div>
+        <div class="form-group"><label class="form-label">新密钥（BCrypt 加密后存储）</label>
+          <div class="inline-flex" style="gap:8px;">
+            <input type="text" value="sk_live_8f3a9c2e71b4d5f6" class="form-input" style="flex:1; font-family:monospace;">
+            <button class="btn btn-default" onclick="toast('已复制')"><i class="fas fa-copy"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer"><button onclick="closeModal('appSecretModal')" class="btn btn-default">取消</button><button onclick="closeModal('appSecretModal');toast('密钥已轮换')" class="btn btn-primary">确认轮换</button></div>
+    </div>
+  </div>
+
+  <!-- ========== 轻提示 ========== -->
+  <div id="toast" style="position:fixed;top:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);color:#FFF;padding:8px 16px;border-radius:6px;font-size:14px;z-index:200;opacity:0;transition:opacity .2s;pointer-events:none;"></div>
+
+  <script>
+    // ========== 视图切换 ==========
+    const VIEW_LABELS = { users:'用户管理', roles:'角色管理', depts:'部门管理', menus:'菜单权限', apps:'应用接入方' };
+
+    function switchView(view) {
+      document.querySelectorAll('.view-section').forEach(s => s.style.display = 'none');
+      document.getElementById('view-' + view).style.display = '';
+
+      document.querySelectorAll('#sysSubmenu .sidebar-menu-item').forEach(el => el.classList.remove('active'));
+      const activeMenu = document.querySelector(`#sysSubmenu .sidebar-menu-item[data-view="${view}"]`);
+      if (activeMenu) activeMenu.classList.add('active');
+
+      document.querySelectorAll('.desc-group').forEach(g => g.style.display = 'none');
+      const desc = document.getElementById('desc-' + view);
+      if (desc) desc.style.display = '';
+
+      setTimeout(drawConnections, 60);
+    }
+
+    function toggleSubmenu() {
+      const sub = document.getElementById('sysSubmenu');
+      const chev = document.getElementById('chevron');
+      const open = sub.classList.toggle('open');
+      chev.style.transform = open ? 'rotate(0deg)' : 'rotate(-90deg)';
+      chev.style.transition = 'transform .2s';
+      setTimeout(drawConnections, 60);
+    }
+
+    // ========== 连线绘制 ==========
+    const svg = document.getElementById('connections');
+    const connections = [];
+
+    function drawConnections() {
+      svg.innerHTML = '';
+      connections.length = 0;
+
+      const leftElements = document.querySelectorAll('.proto-element[data-proto-id]');
+      const rightElements = document.querySelectorAll('.proto-desc[data-proto-id]');
+
+      leftElements.forEach(leftEl => {
+        // 仅处理可见元素（隐藏视图不参与连线）
+        if (leftEl.offsetParent === null) return;
+        const protoId = leftEl.getAttribute('data-proto-id');
+        const rightEl = document.querySelector(`.proto-desc[data-proto-id="${protoId}"]`);
+        if (!rightEl || rightEl.offsetParent === null) return;
+
+        const leftRect = leftEl.getBoundingClientRect();
+        const rightRect = rightEl.getBoundingClientRect();
+        const svgRect = svg.getBoundingClientRect();
+
+        const x1 = leftRect.right - svgRect.left;
+        const y1 = leftRect.top + leftRect.height / 2 - svgRect.top;
+        const x2 = rightRect.left - svgRect.left;
+        const y2 = rightRect.top + rightRect.height / 2 - svgRect.top;
+
+        const cp1x = x1 + (x2 - x1) * 0.5;
+        const cp1y = y1;
+        const cp2x = x1 + (x2 - x1) * 0.5;
+        const cp2y = y2;
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', `M ${x1} ${y1} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x2} ${y2}`);
+        path.setAttribute('class', 'connection-line');
+        path.setAttribute('data-proto-id', protoId);
+        svg.appendChild(path);
+
+        const midX = (x1 + x2) / 2;
+        const midY = (y1 + y2) / 2;
+        const bg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        bg.setAttribute('cx', midX);
+        bg.setAttribute('cy', midY);
+        bg.setAttribute('r', 11);
+        bg.setAttribute('class', 'connection-label-bg');
+        svg.appendChild(bg);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', midX);
+        text.setAttribute('y', midY);
+        text.setAttribute('dy', '0.05em');
+        text.setAttribute('class', 'connection-label');
+        text.textContent = protoId.replace(/^[a-z]/, c => c.toUpperCase());
+        svg.appendChild(text);
+
+        connections.push({ protoId, path, leftEl, rightEl });
+      });
+    }
+
+    function highlightConnection(protoId, active) {
+      const conn = connections.find(c => c.protoId === protoId);
+      if (!conn) return;
+      if (active) {
+        conn.path.classList.add('active');
+        conn.leftEl.classList.add('active-highlight');
+        conn.rightEl.classList.add('active-highlight');
+      } else {
+        conn.path.classList.remove('active');
+        conn.leftEl.classList.remove('active-highlight');
+        conn.rightEl.classList.remove('active-highlight');
+      }
+    }
+
+    function bindHoverEvents() {
+      document.querySelectorAll('.proto-element[data-proto-id]').forEach(el => {
+        el.addEventListener('mouseenter', () => highlightConnection(el.getAttribute('data-proto-id'), true));
+        el.addEventListener('mouseleave', () => highlightConnection(el.getAttribute('data-proto-id'), false));
+      });
+      document.querySelectorAll('.proto-desc[data-proto-id]').forEach(el => {
+        el.addEventListener('mouseenter', () => highlightConnection(el.getAttribute('data-proto-id'), true));
+        el.addEventListener('mouseleave', () => highlightConnection(el.getAttribute('data-proto-id'), false));
+      });
+    }
+
+    // ========== 模态框 ==========
+    function openModal(id) {
+      // 仅当目标视图可见时才打开（避免跨视图误触）
+      document.getElementById(id).classList.remove('modal-hidden');
+    }
+    function closeModal(id) { document.getElementById(id).classList.add('modal-hidden'); }
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.add('modal-hidden'); });
+    });
+
+    // ========== 轻提示 ==========
+    let toastTimer;
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.opacity = '1';
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { t.style.opacity = '0'; }, 1600);
+    }
+
+    // ========== 移动端切换 ==========
+    let mobileShowDesc = false;
+    function toggleMobileView() {
+      mobileShowDesc = !mobileShowDesc;
+      const leftPanel = document.getElementById('left-panel');
+      const rightPanel = document.getElementById('right-panel');
+      const btn = document.getElementById('mobileToggle');
+      if (mobileShowDesc) {
+        leftPanel.style.display = 'none'; rightPanel.style.height = '100vh'; btn.innerHTML = '<i class="fas fa-desktop"></i>';
+      } else {
+        leftPanel.style.display = ''; rightPanel.style.height = ''; btn.innerHTML = '<i class="fas fa-info"></i>';
+      }
+    }
+
+    // ========== 初始化 ==========
+    function init() { drawConnections(); bindHoverEvents(); }
+    document.addEventListener('DOMContentLoaded', () => { setTimeout(init, 120); });
+    let resizeTimer;
+    window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(init, 150); });
+    document.getElementById('left-panel').addEventListener('scroll', () => { requestAnimationFrame(drawConnections); });
+    document.getElementById('right-panel').addEventListener('scroll', () => { requestAnimationFrame(drawConnections); });
+  </script>
+</body>
+</html>

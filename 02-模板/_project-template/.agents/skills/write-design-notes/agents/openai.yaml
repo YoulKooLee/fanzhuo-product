@@ -1,0 +1,4 @@
+interface:
+  display_name: "设计说明编写"
+  short_description: "为原型页面编写 Xbox 风格模块化设计说明（PrototypeLayout）"
+  default_prompt: "使用 $write-design-notes 为这个原型编写/维护设计说明。"

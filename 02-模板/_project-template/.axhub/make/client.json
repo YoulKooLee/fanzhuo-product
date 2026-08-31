@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "kind": "axhub-make-client",
+  "repository": "https://gitee.com/axhub/Axhub-Make/tree/main/client",
+  "templateUrl": "https://gitee.com/axhub/Axhub-Make/releases/download/make-client-template-v0.1.11/axhub-make-client-template.zip",
+  "templateVersion": "0.1.11",
+  "project": {
+    "id": "TEMPLATE_PLACEHOLDER_ID",
+    "name": "TEMPLATE_PLACEHOLDER_NAME"
+  }
+}

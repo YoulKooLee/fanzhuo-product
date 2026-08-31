@@ -1,0 +1,10 @@
+{
+  "name": "axhub-manager",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Axhub 工作台 —— 项目管理与 Skill/知识库/工作规则 资产管理面板",
+  "scripts": {
+    "start": "node server.mjs"
+  }
+}

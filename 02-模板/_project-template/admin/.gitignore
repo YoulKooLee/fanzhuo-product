@@ -1,0 +1,10 @@
+# 前端项目忽略规则（PROJECT_PATH）
+node_modules/
+dist/
+.DS_Store
+*.local
+.env.local
+.env.*.local
+
+# 自动生成的文件
+.auto-import.json

@@ -1,0 +1,20 @@
+﻿# Axhub 整理回退清单 (原路径 -> 新路径)  生成于 2026-08-05 20:41:09
+
+_project-template	->	ERROR: 另一个进程正在使用此文件，因此该进程无法访问此文件。
+健康档案	->	ERROR: 另一个进程正在使用此文件，因此该进程无法访问此文件。
+Digital Twin	->	ERROR: 另一个进程正在使用此文件，因此该进程无法访问此文件。
+Dingcan_app	->	ERROR: 另一个进程正在使用此文件，因此该进程无法访问此文件。
+Nanshan_Visualization	->	01-项目/Nanshan_Visualization
+Rongzhihui_app	->	01-项目/Rongzhihui_app
+_backups	->	03-备份
+tmp	->	04-临时
+.deleted-2026-08-05T12-23-38-146Z	->	05-回收站/.deleted-2026-08-05T12-23-38-146Z
+Create-Axhub-Project.cmd	->	06-运行脚本/Create-Axhub-Project.cmd
+launch-project.ps1	->	06-运行脚本/launch-project.ps1
+scan-projects.ps1	->	06-运行脚本/scan-projects.ps1
+启动 Axhub Make.cmd	->	06-运行脚本/启动 Axhub Make.cmd
+axhub-manager/launch-Digital_Twin____.log	->	07-日志/launch-Digital_Twin____.log
+axhub-manager/launch-Dingcan_app.log	->	07-日志/launch-Dingcan_app.log
+axhub-manager/launch-____.log	->	07-日志/launch-____.log
+AI提示词与常见问题.md	->	08-文档/AI提示词与常见问题.md
+TROUBLESHOOTING_LOG.md	->	08-文档/TROUBLESHOOTING_LOG.md

@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Axhub 原型设计 Agent 工程 · 文件引用关系与触发条件图</title>
+<style>
+  :root{
+    --text:#1A1B1C; --text2:#6B7280; --bg:#F4F3EE; --card:#FFFFFF; --border:#E4E3DD;
+    --entry:#3A3F44; --skill:#2E86AB; --agent:#2F9E6E; --rule:#C97C2D; --knowledge:#8A5FBF; --hook:#C9506A; --config:#7C8794;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Roboto','PingFang SC','Segoe UI','Microsoft YaHei',Arial,sans-serif;background:var(--bg);color:var(--text);}
+  .wrap{max-width:1180px;margin:0 auto;padding:16px;}
+  h1{font-size:20px;margin:0 0 4px;}
+  .sub{font-size:12.5px;color:var(--text2);margin:0 0 12px;line-height:1.6;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}
+  .toolbar input[type=text]{flex:1 1 220px;min-width:0;padding:9px 12px;border:1px solid var(--border);border-radius:10px;font-size:13.5px;outline:none;}
+  .btn{padding:8px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;font-size:12.5px;cursor:pointer;}
+  .btn:hover{background:#f0efe9;}
+  .seg{display:inline-flex;gap:0;}
+  .seg .btn{border-radius:0;border-right:none;}
+  .seg .btn:first-child{border-radius:10px 0 0 10px;}
+  .seg .btn:last-child{border-radius:0 10px 10px 0;border-right:1px solid var(--border);}
+  .seg .btn.active{background:#3A3F44;color:#fff;border-color:#3A3F44;}
+  .timeArrow{fill:#9aa0a6;font-size:15px;font-weight:700;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+  .chip{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border:1px solid var(--border);border-radius:999px;font-size:12px;cursor:pointer;user-select:none;background:#fff;}
+  .chip input{margin:0;}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+  #graphBox{position:relative;width:100%;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:#FBFAF7;}
+  #graphSvg{width:100%;height:auto;display:block;touch-action:none;}
+  .hint{position:absolute;left:10px;bottom:8px;font-size:11px;color:var(--text2);background:rgba(255,255,255,.8);padding:4px 8px;border-radius:8px;}
+  #detail{position:absolute;right:10px;top:8px;width:300px;max-width:calc(100% - 24px);background:rgba(255,255,255,.96);border:1px solid var(--border);border-radius:12px;padding:12px;font-size:12.5px;box-shadow:0 2px 10px rgba(0,0,0,.06);display:none;max-height:82%;overflow:auto;}
+  #detail h3{margin:0 0 6px;font-size:14.5px;}
+  .tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;color:#fff;margin-bottom:6px;}
+  #detail .conn{margin-top:8px;}
+  #detail .conn li{margin:3px 0;list-style:none;}
+  #detail .close{float:right;cursor:pointer;font-size:16px;color:var(--text2);background:none;border:none;}
+  .edgeLbl{font-size:10.5px;fill:#8a8a8a;pointer-events:none;}
+  .node{cursor:pointer;}
+  .nodeCircle{stroke:#fff;stroke-width:1.5;}
+  .nodeLabel{font-size:11px;fill:#444;pointer-events:none;paint-order:stroke;stroke:rgba(255,255,255,.9);stroke-width:3px;}
+  .nodeLabel.big{font-size:13.5px;font-weight:600;fill:#1a1b1c;}
+  .colTitle{font-size:11.5px;font-weight:700;letter-spacing:.5px;}
+  .colHeader{font-size:10px;font-weight:600;fill:#9aa0a6;letter-spacing:1.5px;}
+  .foot{margin-top:10px;font-size:11.5px;color:var(--text2);line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Axhub 原型设计 Agent 工程 · 文件引用关系与触发条件</h1>
+  <p class="sub">数据源：<code>02-模板/_project-template</code>（AGENTS.md、.agents/rules、.agents/skills、.agents/agents、.agents/knowledge、.agents/hooks）。提供两种视图：⏱ 按时序（默认，按 启动→路由→规范→流水线→拦截→收尾 的触发先后分列）；按类型（技能/子Agent/规则/知识/Hook/配置各一列）。节点可拖拽；点击节点查看详情与触发条件；滚轮缩放、空白拖拽平移。</p>
+
+  <div class="card">
+    <div class="toolbar">
+      <input type="text" id="search" placeholder="搜索技能 / 子Agent / 规则 / 知识 / Hook…（如 req-doc、code-reviewer、门禁）">
+      <div class="seg" id="segMode">
+        <button class="btn mode active" id="modeTime">⏱ 按时序</button>
+        <button class="btn mode" id="modeType">按类型</button>
+      </div>
+      <button class="btn" id="reset">重新布局</button>
+      <button class="btn" id="clearSel">清除选中</button>
+    </div>
+    <div class="chips" id="filters"></div>
+
+    <div id="graphBox">
+      <svg id="graphSvg" viewBox="0 0 1400 1500" preserveAspectRatio="xMidYMid meet"></svg>
+      <div id="detail"></div>
+      <div class="hint">拖拽节点 / 滚轮缩放 / 背景拖拽平移</div>
+    </div>
+    <div class="foot">
+      说明：① 曲线 = 引用/编排关系，线上文字为触发条件（hover 连线可放大查看）；② 技能「description」已在会话启动预加载，禁止遍历 SKILL.md（防上下文过载）；③ 需求文档走「需求文档技能路由」6 级优先级；④ CLAUDE.md 现为占位，指向 AGENTS.md 为唯一真源；⑤ 知识库新增/删除文件必须同步 catalog.json（知识库维护铁律）。
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+try{
+var TYPES = {
+  entry:{label:'入口/主规则', color:'var(--entry)'},
+  skill:{label:'技能 Skills', color:'var(--skill)'},
+  agent:{label:'子Agent', color:'var(--agent)'},
+  rule:{label:'规则 Rules', color:'var(--rule)'},
+  knowledge:{label:'知识 Knowledge', color:'var(--knowledge)'},
+  hook:{label:'Hook 钩子', color:'var(--hook)'},
+  config:{label:'配置文件', color:'var(--config)'}
+};
+var NODES = [];
+function N(id,label,type,group,desc){NODES.push({id:id,label:label,type:type,group:group||'',desc:desc||'',x:0,y:0});}
+// —— 入口 ——
+N('AGENTS.md','AGENTS.md','entry','入口','主规则/总入口：技能路由表、同类技能裁决、冲突判据、禁区、正反示例、执行优先级、子Agent编排、知识库与Hook门禁。');
+N('CLAUDE.md','CLAUDE.md','entry','入口','占位说明：不再复制正文，以仓库根目录 AGENTS.md 为唯一真源。');
+// —— 技能（含触发词） ——
+N('page-generator','page-generator','skill','原型生成','开发层页面生成；输入须为 SRS；admin/ 为 PROJECT_PATH。触发：创建/生成页面、实现功能。');
+N('frontend-design','frontend-design','skill','原型生成','定制型高质量前端界面：站点、仪表盘、组件、海报。触发：构建网页组件/页面、美化界面。');
+N('vibepm-web-generator','vibepm-web-generator','skill','原型生成','Web 原型脚手架：企业官网/落地页，统一模板骨架。');
+N('vibepm-app-generator','vibepm-app-generator','skill','原型生成','App 原型脚手架：手机外框（状态栏/灵动岛/圆角）。');
+N('screenshot-to-prototype','screenshot-to-prototype','skill','原型生成','截图还原为可运行原型；仅当用户明确要求还原截图/设计稿时触发。');
+N('prototype-list','prototype-list','skill','原型生成','需求→功能清单+页面结构+树状优先级+ASCII 线框。');
+N('annotation','annotation','skill','标注协作','原型视觉标注；字段/规则/交互注入；输入须为 SRS。');
+N('prototype-annotation','prototype-annotation','skill','标注协作','标注替代 PRD：页面目录/组件/状态说明接入原型。');
+N('prototype-comments','prototype-comments','skill','标注协作','批注驱动的原型微调：读批注→定位元素→修改→删批注。');
+N('canvas-workspace','canvas-workspace','skill','标注协作','Axhub 画布工作区：Excalidraw、画布节点/批注/截图。');
+N('explore-options','explore-options','skill','标注协作','多方案探索/比稿：目标已定，2–3 个方向择一。');
+N('ui-design-image','ui-design-image','skill','设计素材','UI 设计图/整页界面稿/图标/占位图生成（AI 生图）。');
+N('vibepm-style-extractor','vibepm-style-extractor','skill','设计素材','网页风格 token 提取：颜色/字体/阴影/按钮。');
+N('brainstorming','brainstorming','skill','产品管理','需求探讨与设计；默认前置：创建功能前对齐意图与方案。');
+N('requirements-exploration','requirements-exploration','skill','产品管理','需求探索/细化；仅显式触发，严禁自动触发。');
+N('req-doc','req-doc','skill','产品管理','SRS 研发交付主规格；触发：需求规格说明书/细化/反向同步。');
+N('prd-writer','prd-writer','skill','产品管理','产品 PRD 写作：概念版→落地版、MVP 闸门。');
+N('write-prd','write-prd','skill','产品管理','Axhub 项目聚合式 PRD：汇总原型/resources/画布批注。');
+N('prototype-to-prd','prototype-to-prd','skill','产品管理','Axure/URL/HTML 原型逆向 PRD；须配合 prd-writer。');
+N('feasibility-report','feasibility-report','skill','产品管理','可行性研究报告：分析→撰写→审查。');
+N('feature-list','feature-list','skill','产品管理','从 SRS/可研抽取功能点并导出清单。');
+N('hld-design','hld-design','skill','产品管理','概要设计说明书：架构/模块/技术选型。');
+N('lld-design','lld-design','skill','产品管理','详细设计说明书：表结构/API/实现级设计。');
+N('delivery-plan','delivery-plan','skill','产品管理','项目交付链路规划：需求→原型→上线全链路。');
+N('pm-product-pipeline','pm-product-pipeline','skill','产品管理','产品全流程编排：调研→画像→优先级→路线图→SRS→原型→测试→手册→发版。');
+N('pm-feature-prioritization','pm-feature-prioritization','skill','产品管理','RICE/MoSCoW/ICE/Kano 功能优先级排序。');
+N('pm-roadmap','pm-roadmap','skill','产品管理','产品路线图：季度/年度、版本里程碑。');
+N('pm-sprint-planning','pm-sprint-planning','skill','产品管理','迭代与 Sprint 规划：拆需求/估工时/复盘。');
+N('pm-test-cases','pm-test-cases','skill','产品管理','测试用例生成：功能/边界/异常/权限。');
+N('pm-operation-manual','pm-operation-manual','skill','产品管理','操作手册生成：用户/管理员手册。');
+N('pm-release-notes','pm-release-notes','skill','产品管理','发版说明撰写：更新日志/对外公告。');
+N('pm-user-persona','pm-user-persona','skill','用户研究','用户画像/目标用户/用户旅程地图。');
+N('pm-user-interview','pm-user-interview','skill','用户研究','用户访谈：提纲/洞察/报告。');
+N('pm-market-research','pm-market-research','skill','用户研究','市场调研/竞品分析/行业趋势。');
+N('pm-okr-designer','pm-okr-designer','skill','数据分析','OKR/KPI 设计：目标与指标体系。');
+N('pm-product-metrics','pm-product-metrics','skill','数据分析','产品数据分析：埋点/漏斗/留存/看板。');
+N('pm-stakeholder-report','pm-stakeholder-report','skill','数据分析','汇报材料：月/季报、管理层/投资人。');
+N('diagram-generator','diagram-generator','skill','开发辅助','Markdown 插图：流程/架构/时序/泳道。');
+N('drawio-generator','drawio-generator','skill','开发辅助','draw.io 原生 .drawio XML；ER/UML/思维导图/BPMN。');
+N('systematic-debugging','systematic-debugging','skill','开发辅助','系统化调试：先定位根因再修复。触发：任何 bug/测试失败/异常。');
+N('test-driven-development','test-driven-development','skill','开发辅助','测试驱动开发：红→绿→重构。');
+N('verification-before-completion','verification-before-completion','skill','开发辅助','完成前验证：运行构建/测试用证据确认。');
+N('finishing-branch','finishing-branch','skill','开发辅助','分支收尾：验证→检测环境→merge/PR/保留/丢弃四选项。');
+N('slides','slides','skill','开发辅助','HTML 演示文稿：Chart.js/Tokens/叙事布局。');
+N('skill-creator','skill-creator','skill','扩展工具','创建/更新自定义 Agent 技能。');
+N('write-design-notes','write-design-notes','skill','扩展工具','编写原型设计说明（Design Notes）。');
+// —— 子 Agent ——
+N('planner','planner','agent','编排','多文件变更/架构决策前先规划再动手。');
+N('req-analyzer','req-analyzer','agent','需求','需求分析（req-doc 前置）。');
+N('req-writer','req-writer','agent','需求','SRS 撰写（子 Agent，非 prd-writer 技能）。');
+N('req-reviewer','req-reviewer','agent','需求','SRS 审查（先写后审）。');
+N('template-analyzer','template-analyzer','agent','需求','Word 模板提炼。');
+N('feasibility-analyzer','feasibility-analyzer','agent','可研','可行性分析。');
+N('feasibility-writer','feasibility-writer','agent','可研','可行性报告撰写。');
+N('feasibility-reviewer','feasibility-reviewer','agent','可研','可行性报告审查。');
+N('design-analyzer','design-analyzer','agent','设计','概要/详细设计分析。');
+N('design-writer','design-writer','agent','设计','设计文档撰写。');
+N('design-reviewer','design-reviewer','agent','设计','设计文档审查。');
+N('page-spec-loader','page-spec-loader','agent','开发','页面规格加载（page-generator 前置）。');
+N('page-reviewer','page-reviewer','agent','开发','页面审查。');
+N('code-reviewer','code-reviewer','agent','开发','代码审查（安全重点）；写完/修改代码后强制调用。');
+N('annotation-prd-analyzer','annotation-prd-analyzer','agent','标注','标注 PRD 分析。');
+N('annotation-code-locator','annotation-code-locator','agent','标注','标注代码定位。');
+N('diagram-drawer','diagram-drawer','agent','图表','图表绘制。');
+N('delivery-analyzer','delivery-analyzer','agent','交付','交付计划分析。');
+// —— 规则 ——
+N('agent-orchestration','agent-orchestration','rule','编排与流程','Agent 编排：派发/模型路由/并行原则。');
+N('coding-conventions','coding-conventions','rule','规范与门禁','编码规范。');
+N('compaction-recovery','compaction-recovery','rule','压缩与上下文','上下文压缩恢复：可执行检查表（压缩后逐项过）。');
+N('design-notes-conventions','design-notes-conventions','rule','规范与门禁','原型设计说明编写规范。');
+N('development-workflow','development-workflow','rule','编排与流程','开发工作流。');
+N('frontend-conventions','frontend-conventions','rule','规范与门禁','前端规范。');
+N('git-workflow','git-workflow','rule','规范与门禁','Git 工作流规则。');
+N('prd-to-srs-gate','prd-to-srs-gate','rule','规范与门禁','PRD→SRS 转写门禁：page-generator 等不得以 PRD 为真源。');
+N('req-doc-workflow','req-doc-workflow','rule','编排与流程','需求文档工作流。');
+N('session-context','session-context','rule','压缩与上下文','会话上下文。');
+N('spawn-subagent','spawn-subagent','rule','编排与流程','子 Agent 派发。');
+N('subagent-stop','subagent-stop','rule','编排与流程','子 Agent 不得再触发技能/再派发子 Agent。');
+// —— 知识 ——
+N('conventions','conventions','knowledge','通用约定','编码/前端/安全/测试/Git/TS/验证等约定（14 项）。');
+N('diagram','diagram','knowledge','通用约定','流程图/架构图/时序图/UML 规则（5 项）。');
+N('ui-libs','ui-libs','knowledge','通用约定','UI 库参考：Element Plus / Ant Design Vue / Vant / shadcn。');
+N('phase1-requirements','phase1-requirements','knowledge','阶段规范','需求阶段：PRD 语言/SRS 章节/质量清单等（6 项）。');
+N('phase2-design','phase2-design','knowledge','阶段规范','设计阶段：HLD/LLD/选择器/策略等（5 项）。');
+N('phase3-development','phase3-development','knowledge','阶段规范','开发阶段：后端/数据库/交付计划等（4 项）。');
+N('phase4-testing','phase4-testing','knowledge','阶段规范','测试阶段：策略（1 项）。');
+N('catalog.json','catalog.json','config','知识索引','知识库目录索引；铁律：增删 knowledge .md 必须同步。');
+// —— Hook ——
+N('hooks.json','hooks.json','hook','Hook 配置','Hook 门禁配置：各触发时机映射到 run.cjs。');
+N('session-start','session-start','hook','Hook 触发','会话启动：注入强制执行清单。');
+N('config-protection','config-protection','hook','Hook 触发','preToolUse(Write|Edit)：阻止改配置文件消除报错。');
+N('gateguard','gateguard','hook','Hook 触发','preToolUse(Write|Edit)+postToolUse(Read)：编辑前须先 Read。');
+N('review-reminder','review-reminder','hook','Hook 触发','postToolUse(Write|Edit)：代码改动后提醒 code-reviewer。');
+N('review-tracker','review-tracker','hook','Hook 触发','postToolUse(Task)：记录是否已执行 code-reviewer。');
+N('pre-compact','pre-compact','hook','Hook 触发','preCompact：压缩前触发（配合 compaction-recovery）。');
+N('stop-quality-gate','stop-quality-gate','hook','Hook 触发','stop：回复结束前检查 console.log 残留与审查合规。');
+
+var EDGES = [];
+function E(s,t,label){EDGES.push({s:s,t:t,label:label||''});}
+// —— 入口层：主规则到各资源 ——
+E('CLAUDE.md','AGENTS.md','占位指向：AGENTS.md 为唯一真源');
+E('AGENTS.md','req-doc','需求文档路由：优先级1-6');
+E('AGENTS.md','prd-writer','需求文档路由：优先级1-6');
+E('AGENTS.md','prototype-to-prd','需求文档路由：优先级1');
+E('AGENTS.md','prd-to-srs-gate','转写门禁：PRD→SRS');
+E('AGENTS.md','catalog.json','知识库维护铁律：增删同步索引');
+['page-generator','frontend-design','vibepm-web-generator','vibepm-app-generator','screenshot-to-prototype','prototype-list',
+ 'annotation','prototype-annotation','prototype-comments','canvas-workspace','explore-options',
+ 'ui-design-image','vibepm-style-extractor',
+ 'brainstorming','requirements-exploration','req-doc','prd-writer','write-prd','prototype-to-prd','feasibility-report','feature-list','hld-design','lld-design','delivery-plan','pm-product-pipeline','pm-feature-prioritization','pm-roadmap','pm-sprint-planning','pm-test-cases','pm-operation-manual','pm-release-notes',
+ 'pm-user-persona','pm-user-interview','pm-market-research',
+ 'pm-okr-designer','pm-product-metrics','pm-stakeholder-report',
+ 'diagram-generator','drawio-generator','systematic-debugging','test-driven-development','verification-before-completion','finishing-branch','slides','skill-creator','write-design-notes'].forEach(function(s){
+  E('AGENTS.md',s,'技能优先：消息 1% 匹配即调用');
+});
+['planner','req-analyzer','req-writer','req-reviewer','template-analyzer','feasibility-analyzer','feasibility-writer','feasibility-reviewer','design-analyzer','design-writer','design-reviewer','page-spec-loader','page-reviewer','code-reviewer','annotation-prd-analyzer','annotation-code-locator','diagram-drawer','delivery-analyzer'].forEach(function(s){
+  E('AGENTS.md',s,'代理分工：触发场景→调用对象');
+});
+['agent-orchestration','coding-conventions','compaction-recovery','design-notes-conventions','development-workflow','frontend-conventions','git-workflow','prd-to-srs-gate','req-doc-workflow','session-context','spawn-subagent','subagent-stop'].forEach(function(s){
+  E('AGENTS.md',s,'规范驱动：写入前按需读取');
+});
+['conventions','diagram','phase1-requirements','phase2-design','phase3-development','phase4-testing','ui-libs'].forEach(function(s){
+  E('AGENTS.md',s,'按需读取：知识库速查');
+});
+// —— 技能 → 子 Agent 流水线 ——
+E('req-doc','req-analyzer','req-analyzer→req-writer→req-reviewer');
+E('req-doc','req-writer','先写后审');
+E('req-doc','req-reviewer','先写后审');
+E('req-doc','template-analyzer','Word 模板提炼');
+E('feasibility-report','feasibility-analyzer','分析');
+E('feasibility-report','feasibility-writer','撰写');
+E('feasibility-report','feasibility-reviewer','审查');
+E('hld-design','design-analyzer','分析');
+E('hld-design','design-writer','撰写');
+E('hld-design','design-reviewer','审查');
+E('lld-design','design-analyzer','分析');
+E('lld-design','design-writer','撰写');
+E('lld-design','design-reviewer','审查');
+E('page-generator','page-spec-loader','前置规格');
+E('page-generator','page-reviewer','并行审查');
+E('page-generator','code-reviewer','并行审查');
+E('annotation','annotation-prd-analyzer','分析');
+E('annotation','annotation-code-locator','定位');
+E('diagram-generator','diagram-drawer','Task generalPurpose + Read');
+E('delivery-plan','delivery-analyzer','分析');
+E('AGENTS.md','planner','多文件变更/架构决策前');
+// —— 同类技能裁决 ——
+E('prd-writer','write-prd','冲突裁决：聚合 vs 从零');
+E('annotation','prototype-annotation','冲突裁决：是否替代需求文档');
+E('diagram-generator','drawio-generator','冲突裁决：嵌入文档 vs .drawio 源文件');
+E('brainstorming','requirements-exploration','冲突裁决：默认 vs 显式触发');
+E('brainstorming','explore-options','冲突裁决：做什么 vs 怎么做');
+E('page-generator','vibepm-web-generator','冲突裁决：开发层 vs 原型层');
+E('page-generator','vibepm-app-generator','冲突裁决：开发层 vs 原型层');
+E('frontend-design','vibepm-web-generator','冲突裁决：定制 vs 套模板');
+E('screenshot-to-prototype','ui-design-image','冲突裁决：还原 vs 生成');
+E('prototype-comments','prototype-annotation','冲突裁决：批注输入 vs 输出');
+// —— 技能 → 知识 ——
+E('req-doc','phase1-requirements','SRS 语言/章节规范');
+E('prd-writer','phase1-requirements','PRD 语言规范');
+E('annotation','phase1-requirements','PRD 选择器校验');
+E('hld-design','phase2-design','概要设计规范');
+E('lld-design','phase2-design','详细设计规范');
+E('page-generator','ui-libs','Element Plus 组件/页面');
+E('diagram-generator','diagram','图表规则');
+// —— 子 Agent → 知识（强制前置）——
+E('code-reviewer','conventions','审查规范');
+E('req-writer','phase1-requirements','SRS 规范');
+E('design-writer','phase2-design','设计规范');
+E('page-reviewer','conventions','页面审查规范');
+// —— 规则 → 知识 ——
+E('coding-conventions','conventions','编码规范');
+E('frontend-conventions','conventions','前端规范');
+E('git-workflow','conventions','Git 规范');
+E('prd-to-srs-gate','phase1-requirements','PRD 语言');
+E('req-doc-workflow','phase1-requirements','需求文档规范');
+// —— 规则间 ——
+E('spawn-subagent','subagent-stop','子Agent 停止约束');
+E('agent-orchestration','spawn-subagent','派发规则');
+E('prd-to-srs-gate','req-doc-workflow','门禁→工作流');
+// —— Hook ——
+E('hooks.json','session-start','sessionStart 会话启动');
+E('hooks.json','config-protection','preToolUse: Write|Edit');
+E('hooks.json','gateguard','preToolUse+postToolUse(Read)');
+E('hooks.json','review-reminder','postToolUse: Write|Edit');
+E('hooks.json','review-tracker','postToolUse: Task');
+E('hooks.json','pre-compact','preCompact 压缩前');
+E('hooks.json','stop-quality-gate','stop 回复结束前');
+E('pre-compact','compaction-recovery','压缩恢复检查表');
+E('AGENTS.md','hooks.json','Hook 门禁：接入 IDE 自动生效');
+// —— 知识索引 ——
+['conventions','diagram','phase1-requirements','phase2-design','phase3-development','phase4-testing','ui-libs'].forEach(function(s){
+  E(s,'catalog.json','目录索引（铁律：一一对应）');
+});
+
+// ===== 布局：分列（dendrogram 式）=====
+var MODE = 'time'; // 'time' 时序 | 'type' 类型
+var GAP = 34;
+var SPACING = 25;
+var COLUMNS = [
+  {type:'entry', w:180},
+  {type:'skill', w:235},
+  {type:'agent', w:215},
+  {type:'rule', w:215},
+  {type:'knowledge', w:225},
+  {type:'hook', w:205},
+  {type:'config', w:185}
+];
+var colOf = {};
+COLUMNS.forEach(function(c,i){colOf[c.type]=i;});
+var HEADERS = {
+  skill:['原型生成','标注协作','设计素材','产品管理','用户研究','数据分析','开发辅助','扩展工具'],
+  agent:['编排','需求','可研','设计','开发','标注','图表','交付'],
+  rule:['编排与流程','规范与门禁','压缩与上下文'],
+  knowledge:['通用约定','阶段规范']
+};
+// 时序阶段（按会话内触发先后排列）
+var TIME_PHASES = [
+  {label:'① 启动 · 加载', w:215, groups:[
+    {label:null, ids:['AGENTS.md','CLAUDE.md','hooks.json','session-start']}
+  ]},
+  {label:'② 路由 · 技能', w:248, groups:[
+    {label:'需求文档路由 · 优先级1-6', ids:['req-doc','prd-writer','prototype-to-prd']},
+    {label:'原型生成', ids:['page-generator','frontend-design','vibepm-web-generator','vibepm-app-generator','screenshot-to-prototype','prototype-list']},
+    {label:'标注协作', ids:['annotation','prototype-annotation','prototype-comments','canvas-workspace','explore-options']},
+    {label:'设计素材', ids:['ui-design-image','vibepm-style-extractor']},
+    {label:'产品管理', ids:['brainstorming','requirements-exploration','write-prd','feasibility-report','feature-list','hld-design','lld-design','delivery-plan','pm-product-pipeline','pm-feature-prioritization','pm-roadmap','pm-sprint-planning','pm-test-cases','pm-operation-manual','pm-release-notes']},
+    {label:'用户研究', ids:['pm-user-persona','pm-user-interview','pm-market-research']},
+    {label:'数据分析', ids:['pm-okr-designer','pm-product-metrics','pm-stakeholder-report']},
+    {label:'开发辅助', ids:['diagram-generator','drawio-generator','systematic-debugging','test-driven-development','verification-before-completion','finishing-branch','slides']},
+    {label:'扩展工具', ids:['skill-creator','write-design-notes']}
+  ]},
+  {label:'③ 规范 · 知识', w:240, groups:[
+    {label:'规则（写入前按需读取）', ids:['agent-orchestration','spawn-subagent','subagent-stop','development-workflow','req-doc-workflow','prd-to-srs-gate','coding-conventions','frontend-conventions','git-workflow','design-notes-conventions','session-context']},
+    {label:'知识库（按需速查）', ids:['conventions','diagram','ui-libs','phase1-requirements','phase2-design','phase3-development','phase4-testing']}
+  ]},
+  {label:'④ 流水线 · 子Agent', w:235, groups:[
+    {label:'编排（规划先行）', ids:['planner']},
+    {label:'需求', ids:['req-analyzer','req-writer','req-reviewer','template-analyzer']},
+    {label:'可研', ids:['feasibility-analyzer','feasibility-writer','feasibility-reviewer']},
+    {label:'设计', ids:['design-analyzer','design-writer','design-reviewer']},
+    {label:'开发', ids:['page-spec-loader','page-reviewer','code-reviewer']},
+    {label:'标注', ids:['annotation-prd-analyzer','annotation-code-locator']},
+    {label:'图表', ids:['diagram-drawer']},
+    {label:'交付', ids:['delivery-analyzer']}
+  ]},
+  {label:'⑤ 拦截 · Hook', w:230, groups:[
+    {label:'写入前 preToolUse', ids:['config-protection','gateguard']},
+    {label:'写入后 postToolUse', ids:['review-reminder','review-tracker']},
+    {label:'压缩前 preCompact', ids:['pre-compact','compaction-recovery']},
+    {label:'回复结束前 stop', ids:['stop-quality-gate']}
+  ]},
+  {label:'⑥ 收尾 · 维护', w:210, groups:[
+    {label:null, ids:['catalog.json']}
+  ]}
+];
+
+var TYPE_COLORS = {entry:'#3A3F44',skill:'#2E86AB',agent:'#2F9E6E',rule:'#C97C2D',knowledge:'#8A5FBF',hook:'#C9506A',config:'#7C8794'};
+var byId = {};
+NODES.forEach(function(n){byId[n.id]=n;});
+var hidden = {};
+var layers = [], colHeaders = {};
+var W = 1400, H = 1500;
+
+function subgroupOf(n){ return n.group; }
+// —— 类型视图：按类型分列 + 组标题 ——
+function buildTypeLayers(){
+  layers = COLUMNS.map(function(c){ return {type:c.type, label:TYPES[c.type].label, w:c.w, items:[]}; });
+  NODES.forEach(function(n){
+    var li=colOf[n.type];
+    layers[li].items.push({kind:'node', id:n.id, sub:subgroupOf(n)});
+  });
+  COLUMNS.forEach(function(c,li){
+    var hs=HEADERS[c.type]||[];
+    if(!hs.length) return;
+    var items=layers[li].items;
+    var order=[];
+    hs.forEach(function(h){
+      order.push({kind:'header', label:h});
+      items.forEach(function(it){ if(it.kind==='node'&&it.sub===h) order.push(it); });
+    });
+    items.forEach(function(it){ if(it.kind==='node' && hs.indexOf(it.sub)<0) order.push(it); });
+    layers[li].items=order;
+  });
+  barySweeps();
+}
+// —— 时序视图：按触发先后分列 ——
+function buildTimeLayers(){
+  layers = TIME_PHASES.map(function(c){ return {label:c.label, w:c.w, items:[]}; });
+  TIME_PHASES.forEach(function(c,li){
+    c.groups.forEach(function(grp){
+      if(grp.label) layers[li].items.push({kind:'header', label:grp.label});
+      grp.ids.forEach(function(id){ layers[li].items.push({kind:'node', id:id}); });
+    });
+  });
+}
+function buildLayers(){ if(MODE==='type') buildTypeLayers(); else buildTimeLayers(); }
+
+// 交叉最小化（仅类型视图）
+function adjacentInLayer(node, layerIdx){
+  var ids=[];
+  EDGES.forEach(function(e){
+    var so=byId[e.s], to=byId[e.t];
+    if(!so||!to) return;
+    if(e.s===node.id && colOf[to.type]===layerIdx) ids.push(e.t);
+    else if(e.t===node.id && colOf[so.type]===layerIdx) ids.push(e.s);
+  });
+  return ids;
+}
+function indexOfLayer(li){ var m={}; layers[li].items.forEach(function(it,i){ if(it.kind==='node') m[it.id]=i; }); return m; }
+function sortLayer(layer, refIdx, refLayerIdx){
+  var groups=[]; var cur=[]; var curH=null;
+  layer.items.forEach(function(it){
+    if(it.kind==='header'){ if(cur.length){groups.push({h:curH,items:cur}); cur=[];} curH=it.label; }
+    else cur.push(it);
+  });
+  if(cur.length) groups.push({h:curH,items:cur});
+  var out=[];
+  groups.forEach(function(g){
+    if(g.h!==null) out.push({kind:'header', label:g.h});
+    var arr=g.items.slice();
+    var pos={}; arr.forEach(function(it,i){pos[it.id]=i;});
+    arr.forEach(function(it){
+      var ids=adjacentInLayer(byId[it.id], refLayerIdx);
+      var sum=0,cnt=0;
+      ids.forEach(function(id){ if(refIdx[id]!=null){sum+=refIdx[id];cnt++;} });
+      it._bary = cnt? sum/cnt : pos[it.id];
+    });
+    arr.sort(function(a,b){return a._bary-b._bary;});
+    arr.forEach(function(it){out.push(it);});
+  });
+  layer.items=out;
+}
+function barySweeps(){
+  for(var pass=0; pass<3; pass++){
+    for(var li=1; li<COLUMNS.length; li++){ sortLayer(layers[li], indexOfLayer(li-1), li-1); }
+    for(var li=COLUMNS.length-2; li>=0; li--){ sortLayer(layers[li], indexOfLayer(li+1), li+1); }
+  }
+}
+function assignPositions(){
+  var maxH=0;
+  layers.forEach(function(layer){
+    var y=56; var first=true;
+    layer.items.forEach(function(it){
+      if(it.kind==='header'){ if(!first) y+=10; it.y=y; y+=SPACING; }
+      else { it.y=y; y+=SPACING; }
+      first=false;
+    });
+    layer.height=y+40;
+    if(layer.height>maxH) maxH=layer.height;
+  });
+  var cx=maxH/2;
+  var x=30;
+  layers.forEach(function(layer){
+    var off=cx-layer.height/2;
+    layer.items.forEach(function(it){ it.y+=off; });
+    layer.x=x+16; layer.titleY=off+42;
+    x+=layer.w+GAP;
+  });
+  W=x+30; H=maxH;
+  colHeaders={};
+  layers.forEach(function(layer){
+    layer.items.forEach(function(it){
+      if(it.kind==='node'){ var n=byId[it.id]; n.x=layer.x; n.y=it.y; }
+      else {
+        var k=layer.type||layer.label;
+        if(!colHeaders[k]) colHeaders[k]=[];
+        colHeaders[k].push({label:it.label, y:it.y, x:layer.x});
+      }
+    });
+  });
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+}
+function relayout(){ buildLayers(); assignPositions(); }
+
+// ===== 渲染 =====
+var svg = document.getElementById('graphSvg');
+var NS = 'http://www.w3.org/2000/svg';
+var g = document.createElementNS(NS,'g');
+svg.appendChild(g);
+var edgeG = document.createElementNS(NS,'g'); g.appendChild(edgeG);
+var nodeG = document.createElementNS(NS,'g'); g.appendChild(nodeG);
+var labelG = document.createElementNS(NS,'g'); g.appendChild(labelG);
+var selNode = null;
+
+function nodeRadius(n){ if(n.type==='entry')return 13; if(n.type==='config')return 9; if(n.type==='hook')return 8; return 7; }
+function visible(n){ return !hidden[n.type]; }
+
+function render(){
+  while(edgeG.firstChild)edgeG.removeChild(edgeG.firstChild);
+  while(nodeG.firstChild)nodeG.removeChild(nodeG.firstChild);
+  while(labelG.firstChild)labelG.removeChild(labelG.firstChild);
+  // 列标题 + 时序箭头 + 组标题
+  layers.forEach(function(layer){
+    if(!layer.items.length) return;
+    var ttl=document.createElementNS(NS,'text');
+    ttl.setAttribute('class','colTitle');
+    ttl.setAttribute('x',layer.x); ttl.setAttribute('y',layer.titleY);
+    ttl.setAttribute('fill', MODE==='type' ? TYPE_COLORS[layer.type] : '#3A3F44');
+    ttl.textContent=layer.label;
+    labelG.appendChild(ttl);
+  });
+  if(MODE==='time'){
+    for(var ai=0; ai<layers.length-1; ai++){
+      var ax=(layers[ai].x-16) + layers[ai].w + GAP/2;
+      var ar=document.createElementNS(NS,'text');
+      ar.setAttribute('class','timeArrow');
+      ar.setAttribute('x',ax); ar.setAttribute('y',layers[ai].titleY+1);
+      ar.setAttribute('text-anchor','middle');
+      ar.textContent='→';
+      labelG.appendChild(ar);
+    }
+  }
+  Object.keys(colHeaders).forEach(function(t){
+    colHeaders[t].forEach(function(h){
+      var tx=document.createElementNS(NS,'text');
+      tx.setAttribute('class','colHeader');
+      tx.setAttribute('x',h.x); tx.setAttribute('y',h.y);
+      tx.textContent=h.label;
+      labelG.appendChild(tx);
+      var ln=document.createElementNS(NS,'line');
+      ln.setAttribute('x1',h.x-4); ln.setAttribute('x2',h.x+92); ln.setAttribute('y1',h.y+3); ln.setAttribute('y2',h.y+3);
+      ln.setAttribute('stroke','#dedbd2'); ln.setAttribute('stroke-width',1);
+      labelG.appendChild(ln);
+    });
+  });
+  // 边（平滑贝塞尔）
+  var shownEdges = EDGES.filter(function(e){var s=byId[e.s],t=byId[e.t];return s&&t&&visible(s)&&visible(t);});
+  shownEdges.forEach(function(e){
+    var s=byId[e.s],t=byId[e.t];
+    var x1=s.x+nodeRadius(s), y1=s.y, x2=t.x-nodeRadius(t), y2=t.y;
+    var mx=(x1+x2)/2;
+    var p=document.createElementNS(NS,'path');
+    p.setAttribute('d','M'+x1+' '+y1+' C'+mx+' '+y1+' '+mx+' '+y2+' '+x2+' '+y2);
+    p.setAttribute('fill','none');p.setAttribute('stroke','#c9c6bd');p.setAttribute('stroke-width',1);p.setAttribute('opacity',0.9);
+    p.style.cursor='pointer';
+    p.addEventListener('click',function(ev){ev.stopPropagation();showEdge(e,p);});
+    p.addEventListener('mouseenter',function(){showEdge(e,p);});
+    p.addEventListener('mouseleave',function(){if(!e._pin)hideEdge(e);});
+    p._e=e;
+    edgeG.appendChild(p);
+  });
+  // 节点
+  NODES.forEach(function(n){
+    if(!visible(n))return;
+    var isSel = selNode && selNode.id===n.id;
+    var isNb = selNode && connected(n);
+    var g2=document.createElementNS(NS,'g');
+    g2.setAttribute('class','node');
+    g2.setAttribute('transform','translate('+n.x+','+n.y+')');
+    var r=nodeRadius(n)*(isSel?1.4:1);
+    var c=document.createElementNS(NS,'circle');
+    c.setAttribute('r',r);
+    c.setAttribute('fill',TYPE_COLORS[n.type]);
+    c.setAttribute('class','nodeCircle');
+    if(selNode){ c.setAttribute('opacity', isNb||isSel?1:0.18); }
+    g2.appendChild(c);
+    var lbl=document.createElementNS(NS,'text');
+    lbl.setAttribute('class','nodeLabel'+(n.type==='entry'||n.type==='config'?' big':''));
+    lbl.setAttribute('x',n.x+r+4);lbl.setAttribute('y',n.y+4);
+    lbl.textContent=n.label;
+    if(selNode){ lbl.setAttribute('opacity', isNb||isSel?1:0.15); }
+    labelG.appendChild(lbl);
+    g2.addEventListener('click',function(ev){ev.stopPropagation();select(n);});
+    g2.addEventListener('mouseenter',function(){highlightEdges(n);});
+    g2.addEventListener('mouseleave',function(){ unhighlightEdges(); });
+    nodeG.appendChild(g2);
+    n._el=g2;
+  });
+}
+function connected(n){ if(!selNode)return false; return EDGES.some(function(e){return (e.s===selNode.id&&e.t===n.id)||(e.t===selNode.id&&e.s===n.id);}); }
+function highlightEdges(n){
+  edgeG.childNodes.forEach(function(p){
+    var e=p._e;
+    var hit = e && (e.s===n.id||e.t===n.id);
+    p.setAttribute('stroke', hit?'#F4A261':'#c9c6bd');
+    p.setAttribute('stroke-width', hit?2.4:1);
+  });
+}
+function unhighlightEdges(){
+  edgeG.childNodes.forEach(function(p){
+    p.setAttribute('stroke','#c9c6bd');p.setAttribute('stroke-width',1);
+  });
+}
+var edgeLblEls=[];
+function showEdge(e,line){
+  edgeLblEls.forEach(function(x){if(x.parentNode)x.parentNode.removeChild(x);});
+  edgeLblEls=[];
+  var s=byId[e.s],t=byId[e.t]; if(!s||!t)return;
+  var mx=(s.x+t.x)/2, my=(s.y+t.y)/2;
+  var tx=document.createElementNS(NS,'text');
+  tx.setAttribute('class','edgeLbl');
+  tx.setAttribute('x',mx);tx.setAttribute('y',my-5);
+  tx.setAttribute('text-anchor','middle');
+  tx.textContent=e.label||'';
+  labelG.appendChild(tx);
+  var box=tx.getBBox();
+  var rect=document.createElementNS(NS,'rect');
+  rect.setAttribute('x',box.x-4);rect.setAttribute('y',box.y-2);rect.setAttribute('width',box.width+8);rect.setAttribute('height',box.height+4);
+  rect.setAttribute('fill','rgba(255,255,255,0.94)');rect.setAttribute('stroke','#E4E3DD');rect.setAttribute('rx',4);
+  labelG.insertBefore(rect,tx);
+  edgeLblEls.push(rect,tx);
+}
+function hideEdge(e){ if(e&&e._pin)return; edgeLblEls.forEach(function(x){if(x.parentNode)x.parentNode.removeChild(x);}); edgeLblEls=[]; }
+
+// 详情面板
+var detail=document.getElementById('detail');
+function select(n){
+  selNode=n;
+  render();
+  var d=TYPES[n.type];
+  var html='<button class="close" onclick="(function(){var e=document.getElementById(\'detail\');e.style.display=\'none\';})()">✕</button>';
+  html+='<span class="tag" style="background:'+TYPE_COLORS[n.type]+'">'+d.label+'</span>';
+  html+='<h3>'+n.label+'</h3>';
+  html+='<div>'+(n.desc||'')+'</div>';
+  var conns=EDGES.filter(function(e){return e.s===n.id||e.t===n.id;});
+  if(conns.length){
+    html+='<div class="conn"><b>连接关系 / 触发条件（'+conns.length+'）</b><ul>';
+    conns.forEach(function(e){
+      var other= e.s===n.id?byId[e.t]:byId[e.s];
+      var dir = e.s===n.id?'→':'←';
+      html+='<li><span style="color:'+TYPE_COLORS[other.type]+'">'+other.label+'</span> '+dir+' <span style="color:#8a8a8a">'+ (e.label||'') +'</span></li>';
+    });
+    html+='</ul></div>';
+  }
+  detail.innerHTML=html;
+  detail.style.display='block';
+}
+
+// 筛选
+var filtersEl=document.getElementById('filters');
+Object.keys(TYPES).forEach(function(t){
+  var chip=document.createElement('label');
+  chip.className='chip';
+  chip.innerHTML='<span class="dot" style="background:'+TYPE_COLORS[t]+'"></span><input type="checkbox" checked data-t="'+t+'">'+TYPES[t].label;
+  chip.querySelector('input').addEventListener('change',function(){
+    hidden[t]=!this.checked;
+    if(this.checked===false && selNode && selNode.type===t){ selNode=null; detail.style.display='none'; }
+    render();
+  });
+  filtersEl.appendChild(chip);
+});
+
+// 搜索
+var search=document.getElementById('search');
+search.addEventListener('input',function(){
+  var q=this.value.trim().toLowerCase();
+  var hit=null;
+  if(q){
+    NODES.forEach(function(n){ if(n.label.toLowerCase().indexOf(q)>=0){hit=n;} });
+  }
+  if(hit){
+    selNode=hit; render(); select(hit);
+    view.x=(W/2-hit.x*view.k);
+    view.y=(H/2-hit.y*view.k);
+    applyView();
+  } else if(!q){
+    selNode=null; detail.style.display='none'; render();
+  }
+});
+
+// viewport
+var box=document.getElementById('graphBox');
+var view = {x:0,y:0,k:1};
+function dispScale(){ var cw=svg.clientWidth||W; return cw/W; }
+function toSvg(px,py){ var s=dispScale(); return {x:(px/s-view.x)/view.k, y:(py/s-view.y)/view.k}; }
+function applyView(){ g.setAttribute('transform','translate('+view.x+','+view.y+') scale('+view.k+')'); }
+svg.addEventListener('wheel',function(ev){
+  ev.preventDefault();
+  var f= ev.deltaY<0?1.1:0.9;
+  view.k=Math.max(0.3,Math.min(2.5,view.k*f));
+  applyView();
+},{passive:false});
+var dragging=false, dragNode=null, startX=0,startY=0,startVX=0,startVY=0;
+svg.addEventListener('mousedown',function(ev){
+  startX=ev.clientX;startY=ev.clientY;
+  var t=ev.target;
+  var gEl=t.closest?t.closest('.node'):null;
+  if(gEl){
+    dragging=true;dragNode=gEl;
+    var id=null; NODES.forEach(function(n){if(n._el===gEl)id=n;});
+    if(id){dragNode=id; selNode=id; select(id); render();}
+  } else { dragging=true;dragNode=null; startVX=view.x;startVY=view.y; }
+});
+window.addEventListener('mousemove',function(ev){
+  if(!dragging)return;
+  if(dragNode&&dragNode.id){
+    var p=toSvg(ev.clientX-box.getBoundingClientRect().left, ev.clientY-box.getBoundingClientRect().top);
+    dragNode.x=p.x;dragNode.y=p.y;
+    render();
+  } else {
+    var s=dispScale();
+    view.x=startVX+(ev.clientX-startX)/s;
+    view.y=startVY+(ev.clientY-startY)/s;
+    applyView();
+  }
+});
+window.addEventListener('mouseup',function(){dragging=false;dragNode=null;});
+
+document.getElementById('reset').addEventListener('click',function(){
+  NODES.forEach(function(n){n.x=0;n.y=0;});
+  relayout();
+  view.x=0;view.y=0;view.k=1;applyView();
+  render();
+});
+document.getElementById('clearSel').addEventListener('click',function(){
+  selNode=null;detail.style.display='none';search.value='';render();
+});
+
+// 视图切换（时序 / 类型）
+function switchMode(m){
+  MODE=m;
+  document.getElementById('modeTime').classList.toggle('active', m==='time');
+  document.getElementById('modeType').classList.toggle('active', m==='type');
+  selNode=null; detail.style.display='none'; search.value='';
+  relayout();
+  view.x=0; view.y=0; view.k=1; applyView();
+  render();
+}
+document.getElementById('modeTime').addEventListener('click',function(){ switchMode('time'); });
+document.getElementById('modeType').addEventListener('click',function(){ switchMode('type'); });
+
+// 初始化
+relayout();
+applyView();
+render();
+}catch(e){console.error(e); document.getElementById('graphBox').innerHTML='<div style="padding:20px;color:#6B7280;font-size:13px;">可视化加载失败：'+e.message+'</div>';}
+})();
+</script>
+</body>
+</html>

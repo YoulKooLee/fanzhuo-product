@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Element Plus Smoke Test</title>
+  <link rel="stylesheet" href="../assets/vendor/element-plus/index.css" />
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #dcdfe6;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Inter", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    }
+
+    .page {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 32px 20px 56px;
+    }
+
+    .hero {
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .tips {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      min-width: 0;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--card);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+    }
+
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .card p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .stack-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .calendar-box {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .footer-note {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="page">
+    <section class="hero">
+      <h1>Element Plus 本地环境冒烟测试</h1>
+      <p>该页面使用本地 `Vue 3` 与 `Element Plus` 资源，集中测试基础组件、弹层组件、日期类组件和表格组件在本地直引模式下的表现。</p>
+      <div class="tips">
+        建议优先观察：按钮是否渲染、下拉是否能展开、日期选择器是否能弹出、对话框是否可打开、日历和表格是否正常显示。
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2>基础组件</h2>
+        <p>用于验证样式、颜色、按钮、标签等最基础的渲染是否正常。</p>
+        <div class="stack">
+          <el-button type="primary">主要按钮</el-button>
+          <el-button>默认按钮</el-button>
+          <el-button type="success" plain>成功按钮</el-button>
+          <el-tag type="danger">风险标签</el-tag>
+          <el-tag type="warning">警告标签</el-tag>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>消息与开关</h2>
+        <p>用于验证响应式状态更新、开关、评分等交互组件是否可用。</p>
+        <div class="stack">
+          <el-switch v-model="switchValue"></el-switch>
+          <span>开关状态：{{ switchValue ? '开启' : '关闭' }}</span>
+          <el-rate v-model="rateValue"></el-rate>
+          <span>评分：{{ rateValue }}</span>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>下拉与选择器</h2>
+        <p>这类组件更容易暴露弹层、定位或事件绑定问题。</p>
+        <div class="stack-column">
+          <el-select v-model="cityValue" placeholder="请选择城市" style="max-width: 280px;">
+            <el-option label="上海" value="shanghai"></el-option>
+            <el-option label="北京" value="beijing"></el-option>
+            <el-option label="深圳" value="shenzhen"></el-option>
+          </el-select>
+          <div>当前城市：{{ cityValue || '未选择' }}</div>
+
+          <el-tooltip content="如果鼠标悬停能看到提示，说明 Tooltip 正常" placement="top">
+            <el-button plain>悬停测试 Tooltip</el-button>
+          </el-tooltip>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>日期组件</h2>
+        <p>用于验证日期选择器、弹层日历和本地日期格式是否正常。</p>
+        <div class="stack-column">
+          <el-date-picker
+            v-model="pickedDate"
+            type="date"
+            placeholder="请选择日期"
+            style="max-width: 280px;"
+          ></el-date-picker>
+          <div>当前日期：{{ pickedDateText }}</div>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>对话框</h2>
+        <p>用于验证遮罩、弹层挂载和按钮事件。</p>
+        <div class="stack">
+          <el-button type="primary" @click="dialogVisible = true">打开 Dialog</el-button>
+          <el-button @click="notify">触发 Message</el-button>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>表格</h2>
+        <p>用于验证表格渲染、列定义和简单数据绑定。</p>
+        <el-table :data="tableData" style="width: 100%;">
+          <el-table-column prop="name" label="姓名"></el-table-column>
+          <el-table-column prop="role" label="角色"></el-table-column>
+          <el-table-column prop="status" label="状态"></el-table-column>
+        </el-table>
+      </article>
+
+      <article class="card" style="grid-column: 1 / -1;">
+        <h2>日历</h2>
+        <p>用于验证 `Element Plus` 日历组件在本地环境中的完整渲染能力。</p>
+        <div class="stack" style="margin-bottom: 12px;">
+          <el-button type="primary" @click="resetCalendar">回到今天</el-button>
+          <span>当前日期：{{ calendarText }}</span>
+        </div>
+        <div class="calendar-box">
+          <el-calendar v-model="calendarDate"></el-calendar>
+        </div>
+      </article>
+    </section>
+
+    <div class="footer-note">
+      如果 `Select`、`Tooltip`、`DatePicker`、`Dialog` 都正常，说明你的本地直引环境已经可以支持大多数常见 `Element Plus` 组件。
+      若只有基础组件可用而弹层类组件异常，通常应优先检查脚本加载顺序、浏览器控制台报错，以及是否通过 `file://` 直接打开造成行为限制。
+    </div>
+
+    <el-dialog v-model="dialogVisible" title="本地环境测试" width="420">
+      <span>如果这个对话框能正常打开和关闭，说明 Dialog 组件在当前本地环境中工作正常。</span>
+      <template #footer>
+        <div class="stack" style="justify-content: flex-end;">
+          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="dialogVisible = false">确定</el-button>
+        </div>
+      </template>
+    </el-dialog>
+  </div>
+
+  <script src="../assets/vendor/vue/vue.global.prod.js"></script>
+  <script src="../assets/vendor/element-plus/index.full.min.js"></script>
+  <script src="../assets/vendor/element-plus/locale/zh-cn.js"></script>
+  <script>
+    const { createApp, computed, ref } = Vue
+
+    createApp({
+      setup() {
+        const switchValue = ref(true)
+        const rateValue = ref(4)
+        const cityValue = ref("")
+        const pickedDate = ref(new Date())
+        const dialogVisible = ref(false)
+        const calendarDate = ref(new Date())
+
+        const tableData = ref([
+          { name: "张敏", role: "产品经理", status: "已完成" },
+          { name: "李涛", role: "前端开发", status: "进行中" },
+          { name: "王楠", role: "设计师", status: "待排期" }
+        ])
+
+        const pickedDateText = computed(() => {
+          if (!pickedDate.value) {
+            return "未选择"
+          }
+
+          return pickedDate.value.toLocaleDateString("zh-CN", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+          })
+        })
+
+        const calendarText = computed(() => {
+          return calendarDate.value.toLocaleDateString("zh-CN", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+          })
+        })
+
+        const resetCalendar = () => {
+          calendarDate.value = new Date()
+        }
+
+        const notify = () => {
+          ElementPlus.ElMessage({
+            message: "Message 组件调用成功",
+            type: "success"
+          })
+        }
+
+        return {
+          switchValue,
+          rateValue,
+          cityValue,
+          pickedDate,
+          pickedDateText,
+          dialogVisible,
+          tableData,
+          calendarDate,
+          calendarText,
+          resetCalendar,
+          notify
+        }
+      }
+    })
+      .use(ElementPlus, { locale: ElementPlusLocaleZhCn })
+      .mount("#app")
+  </script>
+</body>
+</html>

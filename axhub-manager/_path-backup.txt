@@ -1,0 +1,1 @@
+﻿C:\Users\����\AppData\Local\Programs\Python\Python312-arm64\Scripts\;C:\Users\����\AppData\Local\Programs\Python\Python312-arm64\;C:\Users\����\AppData\Local\Programs\Python\Launcher\;C:\Users\����\AppData\Local\Microsoft\WindowsApps;C:\Users\����\AppData\Roaming\npm;C:\Users\游翔\.local\bin;C:\Users\游翔\AppData\Local\Programs\CodeBuddy CN\bin

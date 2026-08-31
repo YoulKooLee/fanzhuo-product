@@ -1,0 +1,1169 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VibePM · 暗色低饱和黑灰主题风格</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
+  <style>
+    :root {
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --surface-base: #030303;
+      --surface-canvas: #060606;
+      --surface-elevated: #0c0c0c;
+      --surface-card: #0f0f10;
+      --text-primary: #f4f4f5;
+      --text-secondary: #a1a1aa;
+      --text-tertiary: #71717a;
+      --brand-light: #fafafa;
+      --brand-soft: rgba(250, 250, 250, 0.12);
+      --border-default: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.14);
+      --shadow-soft: 0 24px 80px rgba(0, 0, 0, 0.65);
+      --shadow-card-hover: 0 14px 30px rgba(0, 0, 0, 0.28);
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 18px;
+      --radius-xl: 18px;
+      --radius-pill: 999px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      color: var(--text-primary);
+      font-family: "PingFang SC", "Microsoft YaHei", "Inter", system-ui, sans-serif;
+      line-height: 1.65;
+      min-height: 100vh;
+      background: var(--surface-base);
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, transparent 70%);
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    .ambient-glow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .ambient-glow span {
+      position: absolute;
+      width: min(48vw, 560px);
+      height: min(48vw, 560px);
+      border-radius: 50%;
+      filter: blur(88px);
+      opacity: 0.35;
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .ambient-glow span:nth-child(1) { top: -20%; left: 50%; transform: translateX(-50%); }
+    .ambient-glow span:nth-child(2) { bottom: -25%; right: -10%; opacity: 0.22; }
+
+    button { font-family: inherit; }
+    a.btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      box-sizing: border-box;
+    }
+
+    .container {
+      max-width: min(1200px, calc(100% - clamp(20px, 4vw, 40px)));
+      margin: 0 auto;
+      padding: 24px 0 88px;
+      position: relative;
+      z-index: 1;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.024);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), var(--shadow-soft);
+    }
+    .section { margin-top: 24px; padding: 26px; }
+    .sp-4 { height: 4px; }
+    .sp-6 { height: 6px; }
+    .sp-8 { height: 8px; }
+    .sp-10 { height: 10px; }
+    .sp-12 { height: 12px; }
+    .sp-14 { height: 14px; }
+    .flex { display: flex; }
+    .between { justify-content: space-between; }
+    .center { align-items: center; }
+    .pad-18 { padding: 18px; }
+    .pad-14-18 { padding: 14px 18px; }
+
+    .hero-sample {
+      font-family: "Rajdhani", system-ui, sans-serif;
+      font-size: clamp(2rem, 6.5vw, 4.25rem);
+      line-height: 1.18;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .crumb-active { color: var(--text-primary); }
+    .link-underline { text-decoration: underline; text-underline-offset: 3px; }
+    .divider-tight { margin: 0; }
+    .divider-md { margin: 14px 0; }
+    .swatch-primary {
+      background: var(--brand-soft);
+      border-color: var(--border-strong);
+      color: var(--brand-light);
+    }
+    .chip.chip-marked {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--border-strong);
+      color: var(--text-primary);
+    }
+    .chip.swatch-outline-muted {
+      background: transparent;
+      border-color: var(--border-default);
+      color: var(--text-secondary);
+    }
+    .chip.swatch-outline-muted .inline-icon { color: var(--text-tertiary); }
+
+    .eyebrow {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+    .muted { color: var(--text-secondary); }
+    .accent { color: var(--brand-light); }
+
+    h1 {
+      font-family: "Rajdhani", system-ui, sans-serif;
+      font-size: clamp(2rem, 6.5vw, 4.25rem);
+      line-height: 1.18;
+      font-weight: 700;
+      margin: 8px 0 16px;
+      color: var(--text-primary);
+    }
+    h2 {
+      font-family: "Rajdhani", system-ui, sans-serif;
+      font-size: clamp(1.65rem, 3vw, 2.1rem);
+      margin: 0 0 16px;
+      line-height: 1.22;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    h3 {
+      font-family: "Rajdhani", system-ui, sans-serif;
+      font-size: 22px;
+      margin: 0 0 8px;
+      line-height: 1.28;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    p { margin: 0; font-size: 15px; color: var(--text-secondary); }
+
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding: 14px 18px;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: "Rajdhani", system-ui, sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+    }
+    .brand-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: linear-gradient(145deg, #ffffff, #d4d4d8);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    }
+    .menu { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .menu a {
+      text-decoration: none;
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 8px;
+      border-radius: var(--radius-pill);
+      color: var(--text-secondary);
+      font-size: 12px;
+      transition: color 0.2s var(--ease);
+    }
+    .menu a:hover { color: var(--text-primary); }
+    .anchor-offset { scroll-margin-top: 82px; }
+
+    .hero { padding: 46px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .actions.align { align-items: center; }
+    .actions.spaced { margin-top: 14px; }
+
+    .btn {
+      min-height: 2.75rem;
+      padding: 0.58rem 1.18rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid transparent;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s var(--ease), border-color 0.2s var(--ease), transform 0.2s var(--ease), opacity 0.2s var(--ease);
+    }
+    .btn:focus-visible {
+      outline: 2px solid rgba(255, 255, 255, 0.4);
+      outline-offset: 2px;
+    }
+    .btn-primary {
+      background: var(--brand-light);
+      color: #050505;
+      border-color: #e4e4e7;
+    }
+    .btn-primary:hover {
+      opacity: 0.94;
+      transform: translateY(-1px);
+    }
+    .btn-primary:active { transform: translateY(1px); }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--border-strong);
+      color: var(--text-primary);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+    .btn-pill { border-radius: var(--radius-pill); }
+    .btn-sm { min-height: 2rem; padding: 0 12px; font-size: 0.8125rem; }
+    .btn-lg { min-height: 3rem; padding: 0 1.35rem; font-size: 0.92rem; }
+    .btn-outline {
+      background: transparent;
+      border-color: var(--border-strong);
+      color: var(--text-primary);
+    }
+    .btn-outline:hover { border-color: rgba(255, 255, 255, 0.22); background: rgba(255, 255, 255, 0.04); }
+    .btn-ghost {
+      background: transparent;
+      border-color: var(--border-default);
+      color: var(--text-secondary);
+    }
+    .btn-ghost:hover { background: rgba(255, 255, 255, 0.06); color: var(--text-primary); }
+    .btn-link {
+      height: auto;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--brand-light);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .btn-disabled {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-tertiary);
+      cursor: not-allowed;
+      transform: none;
+      opacity: 0.55;
+    }
+    .btn-icon {
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border-radius: var(--radius-sm);
+      border-color: var(--border-default);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-primary);
+    }
+    .btn-icon-sm { width: 34px; height: 34px; border-radius: 12px; }
+    .inline-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      font-size: 13px;
+      line-height: 1;
+    }
+    .chip-icon { display: inline-flex; align-items: center; }
+    .btn-icon-text { display: inline-flex; align-items: center; gap: 6px; }
+    .btn-scene { width: 190px; justify-content: center; }
+    .icon-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+    .icon-soft-primary {
+      color: var(--text-primary);
+      border: 1px solid var(--border-default);
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .icon-outline {
+      color: var(--text-secondary);
+      border: 1px solid var(--border-default);
+      background: transparent;
+    }
+    .icon-solid-primary {
+      color: #050505;
+      border: 1px solid #e4e4e7;
+      background: var(--brand-light);
+    }
+    .icon-showcase { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+    .swatch {
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .swatch-color { height: 72px; }
+    .swatch-meta { padding: 10px; font-size: 12px; color: var(--text-secondary); }
+    .bg-brand-primary { background: #fafafa; }
+    .bg-brand-strong { background: #e4e4e7; }
+    .bg-text-primary { background: #f4f4f5; }
+    .bg-text-secondary { background: #a1a1aa; }
+    .bg-page-swatch { background: linear-gradient(135deg, #060606, #030303); }
+    .bg-surface-card { background: #0f0f10; }
+    .bg-surface-muted { background: #0c0c0c; }
+    .bg-border-sample { background: rgba(255, 255, 255, 0.08); }
+
+    .mini {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-default);
+      background: rgba(255, 255, 255, 0.02);
+      padding: 18px;
+    }
+
+    .chip, .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      border: 1px solid var(--border-default);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-secondary);
+      height: 30px;
+      padding: 0 12px;
+      font-variant-numeric: tabular-nums;
+    }
+    .chip-accent, .badge-accent {
+      background: var(--brand-light);
+      border-color: #e4e4e7;
+      color: #050505;
+    }
+    .badge-outline { background: transparent; border-color: var(--border-strong); }
+
+    .tabs {
+      display: inline-flex;
+      gap: 4px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-default);
+      padding: 4px;
+    }
+    .tab {
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    .tab-active {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+    }
+
+    .alert {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      border: 1px solid var(--border-strong);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-primary);
+      font-size: 14px;
+    }
+    .alert-strong {
+      background: var(--brand-light);
+      border-color: #e4e4e7;
+      color: #050505;
+    }
+
+    .label {
+      display: block;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+    .input, .select {
+      width: 100%;
+      min-height: 2.75rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0 14px;
+      color: var(--text-primary);
+      outline: none;
+      font-size: 14px;
+      transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+    }
+    .input-sm { width: 220px; min-height: 2rem; font-size: 13px; }
+    .select {
+      appearance: none;
+      -webkit-appearance: none;
+      padding-right: 40px;
+      background-image:
+        linear-gradient(45deg, transparent 50%, var(--text-secondary) 50%),
+        linear-gradient(135deg, var(--text-secondary) 50%, transparent 50%);
+      background-color: rgba(255, 255, 255, 0.03);
+      background-position: calc(100% - 18px) 50%, calc(100% - 12px) 50%;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+    }
+    .textarea {
+      width: 100%;
+      min-height: 112px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 12px 14px;
+      color: var(--text-primary);
+      outline: none;
+      font-size: 14px;
+      font-family: inherit;
+      resize: vertical;
+      transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+    }
+    .input:focus, .select:focus, .textarea:focus {
+      border-color: var(--border-strong);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      color: var(--text-primary);
+      font-size: 14px;
+    }
+    .check-row.compact { margin-bottom: 8px; }
+    .checkbox, .radio {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      border: 1.5px solid var(--border-strong);
+      background: rgba(0, 0, 0, 0.35);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .checkbox { border-radius: 6px; }
+    .checkbox.checked {
+      border-color: var(--brand-light);
+      background: var(--brand-light);
+      color: #050505;
+      font-size: 12px;
+      line-height: 1;
+    }
+    .radio { border-radius: 50%; }
+    .radio.checked::after {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--brand-light);
+    }
+    .option-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-default);
+      background: rgba(255, 255, 255, 0.02);
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+    .option-card.selected {
+      border-color: var(--border-strong);
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+    }
+    .option-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+    .option-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+    .switch-group .check-row { justify-content: space-between; margin-bottom: 8px; }
+
+    .toggle {
+      width: 38px;
+      height: 22px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-pill);
+      position: relative;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .toggle::after {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      top: 2px;
+      left: 2px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+      transition: transform 0.2s var(--ease);
+    }
+    .toggle-on { background: rgba(250, 250, 250, 0.85); }
+    .toggle-on::after {
+      transform: translateX(16px);
+      background: #050505;
+    }
+
+    .kpi {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .kpi-item {
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-default);
+      padding: 14px;
+    }
+    .kpi-value {
+      font-family: "Manrope", system-ui, sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+    .kpi-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #050505;
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--brand-light);
+      border: 2px solid var(--surface-card);
+      margin-left: -8px;
+    }
+    .avatar:first-child { margin-left: 0; }
+    .avatar-strong { background: #e4e4e7; }
+    .avatar-muted { background: var(--text-tertiary); color: var(--text-primary); }
+
+    .progress {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+    }
+    .progress > span {
+      display: block;
+      height: 100%;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(90deg, #fafafa, #e4e4e7);
+    }
+    .w-68 { width: 68%; }
+    .w-91 { width: 91%; }
+    .fw-600 { font-weight: 600; }
+    .fs-12 { font-size: 12px; }
+
+    .stepper-field {
+      width: 100%;
+      min-height: 2.75rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      background: rgba(255, 255, 255, 0.03);
+      justify-content: space-between;
+      padding: 0 10px;
+    }
+    .stepper-field button {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      font-size: 22px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-default);
+      cursor: pointer;
+    }
+    .stepper-field span {
+      flex: 1;
+      text-align: center;
+      font-size: 14px;
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+      color: var(--text-primary);
+    }
+
+    .price {
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-default);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 22px;
+    }
+    .price.featured {
+      background: linear-gradient(165deg, rgba(255, 255, 255, 0.07) 0%, rgba(15, 15, 16, 0.98) 55%);
+      border-color: var(--border-strong);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-card-hover);
+    }
+    .price.featured p, .price.featured .label { color: var(--text-secondary); }
+    .price-value {
+      font-family: "Manrope", system-ui, sans-serif;
+      font-size: 34px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      margin: 8px 0 12px;
+      line-height: 1.1;
+    }
+
+    .table-wrap {
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      border: 1px solid var(--border-default);
+      background: rgba(255, 255, 255, 0.02);
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 620px; }
+    th, td { padding: 12px 14px; text-align: left; }
+    th {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-default);
+      background: rgba(0, 0, 0, 0.35);
+    }
+    td {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 14px;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover td { background: rgba(255, 255, 255, 0.04); }
+    td.td-actions { text-align: right; }
+    .table-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .toolbar-actions { display: flex; gap: 8px; }
+    .divider {
+      height: 1px;
+      border: 0;
+      background: var(--border-default);
+      margin: 18px 0;
+    }
+    .card-flat {
+      background: transparent;
+      border: 1px dashed var(--border-default);
+      box-shadow: none;
+    }
+    .card-padless { padding: 0; overflow: hidden; }
+    .tooltip {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid var(--border-default);
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 12px;
+      cursor: help;
+    }
+    .tooltip::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--surface-elevated);
+      color: var(--text-primary);
+      border: 1px solid var(--border-default);
+      border-radius: 8px;
+      padding: 6px 8px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s var(--ease);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+    }
+    .tooltip:hover::after { opacity: 1; }
+    .crumbs {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    .crumbs .sep { opacity: 0.7; }
+    .type-scale {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-default);
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .type-row {
+      display: grid;
+      grid-template-columns: 80px 1fr 90px;
+      gap: 14px;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .type-row:last-child { border-bottom: 0; }
+    .type-key { font-size: 14px; color: var(--text-secondary); }
+    .type-meta {
+      text-align: right;
+      font-size: 12px;
+      color: var(--text-secondary);
+      letter-spacing: 0.06em;
+    }
+    .type-display {
+      font-family: "Rajdhani", system-ui, sans-serif;
+      font-size: clamp(2rem, 6.5vw, 4.25rem);
+      line-height: 1.14;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .type-h1 {
+      font-family: "Rajdhani", system-ui, sans-serif;
+      font-size: clamp(1.65rem, 3vw, 2.1rem);
+      line-height: 1.22;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .type-body { font-size: 24px; line-height: 1.55; font-weight: 400; color: var(--text-secondary); }
+    .type-label {
+      font-size: 16px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .footer {
+      margin-top: 50px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-default);
+      color: var(--text-secondary);
+      font-size: 12px;
+      text-align: center;
+    }
+    .footer a { color: var(--text-primary); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+    body.mode-readable .card {
+      background: rgba(255, 255, 255, 0.035);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+    body.mode-readable .mini,
+    body.mode-readable .table-wrap {
+      border-color: rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.03);
+    }
+    body.mode-readable p { color: #b3b3bc; }
+
+    @media (max-width: 900px) {
+      h2 { font-size: 26px; }
+      .hero { padding: 28px; }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .grid-3, .grid-2, .kpi { grid-template-columns: 1fr; }
+      .menu { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow" aria-hidden="true"><span></span><span></span></div>
+  <main class="container">
+    <header class="card top-nav">
+      <div class="brand"><span class="brand-dot"></span>Carbon Cloud</div>
+      <nav class="menu">
+        <a href="#sec-colors">色彩系统</a>
+        <a href="#sec-typo">字体与状态</a>
+        <a href="#sec-cards">卡片与进度</a>
+        <a href="#sec-buttons">按钮与图标</a>
+        <a href="#sec-typescale">字号层级</a>
+        <a href="#sec-utility">工具区块</a>
+        <a href="#sec-tabs">标签页与面包屑</a>
+        <a href="#sec-forms">表单控件</a>
+        <a href="#sec-data">数据表格</a>
+      </nav>
+      <div>
+        <button id="readabilityToggle" class="btn btn-secondary btn-sm" type="button" aria-pressed="false">标准对比</button>
+        <a class="btn btn-primary btn-sm" href="https://ai.axureux.com" target="_blank" rel="noopener noreferrer">更多主题</a>
+      </div>
+    </header>
+    <section class="card hero anchor-offset" id="sec-hero">
+      <div class="eyebrow">Dark Enterprise · Low-Sat Gray · Light Accent</div>
+      <h1>暗色低饱和黑灰主题风格<br>完整预览页</h1>
+      <p>视觉规范核心规则：近黑基底 + 低对比边框 + 高对比正文；主动作使用亮色实体按钮，数据指标统一等宽数字，克制 hover 与噪点网格氛围。</p>
+      <div class="actions">
+        <button class="btn btn-primary">主操作按钮</button>
+        <button class="btn btn-secondary">次操作按钮</button>
+        <button class="btn btn-secondary btn-pill">胶囊按钮</button>
+      </div>
+      <div class="kpi">
+        <div class="kpi-item"><div class="kpi-value">99.95%</div><div class="kpi-label">可用性 SLA</div></div>
+        <div class="kpi-item"><div class="kpi-value">14px</div><div class="kpi-label">卡片圆角</div></div>
+        <div class="kpi-item"><div class="kpi-value">1200</div><div class="kpi-label">最大容器宽度</div></div>
+        <div class="kpi-item"><div class="kpi-value">56px</div><div class="kpi-label">背景网格步长</div></div>
+      </div>
+    </section>
+
+    <section class="card section anchor-offset" id="sec-colors">
+      <div class="eyebrow">Colors</div>
+      <h2>色彩系统</h2>
+      <div class="grid-4">
+        <div class="swatch"><div class="swatch-color bg-brand-primary"></div><div class="swatch-meta">强调亮色<br>#fafafa</div></div>
+        <div class="swatch"><div class="swatch-color bg-brand-strong"></div><div class="swatch-meta">分割灰<br>#e4e4e7</div></div>
+        <div class="swatch"><div class="swatch-color bg-text-primary"></div><div class="swatch-meta">主文字<br>#f4f4f5</div></div>
+        <div class="swatch"><div class="swatch-color bg-text-secondary"></div><div class="swatch-meta">次文字<br>#a1a1aa</div></div>
+        <div class="swatch"><div class="swatch-color bg-page-swatch"></div><div class="swatch-meta">页面基底<br>#030303</div></div>
+        <div class="swatch"><div class="swatch-color bg-surface-card"></div><div class="swatch-meta">卡片<br>#0f0f10</div></div>
+        <div class="swatch"><div class="swatch-color bg-surface-muted"></div><div class="swatch-meta">抬升<br>#0c0c0c</div></div>
+        <div class="swatch"><div class="swatch-color bg-border-sample"></div><div class="swatch-meta">默认边框<br>白 8%</div></div>
+      </div>
+    </section>
+
+    <section class="card section anchor-offset" id="sec-typo">
+      <div class="eyebrow">Typography / Tags / States</div>
+      <h2>字体、标签与状态</h2>
+      <div class="grid-3">
+        <article class="mini">
+          <h3 class="hero-sample">Hero</h3>
+          <p>展示标题使用 Rajdhani；正文保持中性灰二级色，避免色相噪声。</p>
+        </article>
+        <article class="mini">
+          <h3>标签体系</h3>
+          <span class="chip">中性标签</span>
+          <span class="chip chip-accent">强调标签</span>
+          <span class="badge">信息</span>
+          <span class="badge badge-accent">在线</span>
+          <span class="badge badge-outline">v1.0</span>
+        </article>
+        <article class="mini">
+          <h3>Tabs & Alert</h3>
+          <div class="tabs">
+            <span class="tab tab-active">概览</span><span class="tab">分析</span><span class="tab">设置</span>
+          </div>
+          <div class="sp-10"></div>
+          <div class="alert"><span><i class="fa-solid fa-circle-info"></i></span><span>集群节点同步完成，未检测到漂移。</span></div>
+          <div class="sp-8"></div>
+          <div class="alert alert-strong"><span><i class="fa-solid fa-shield-halved"></i></span><span>审计日志已归档（合规保留 365 天）。</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="card section anchor-offset" id="sec-cards">
+      <div class="eyebrow">Cards / Team / Progress</div>
+      <h2>卡片、头像组与进度</h2>
+      <div class="grid-3">
+        <article class="mini">
+          <h3>功能卡片</h3>
+          <p>暗半透明卡 + 细白描边；信息层级依靠字号字重而非额外色相。</p>
+          <div class="sp-14"></div>
+          <div class="flex">
+            <span class="avatar">LC</span><span class="avatar avatar-strong">HW</span><span class="avatar">RK</span><span class="avatar avatar-muted">+8</span>
+          </div>
+        </article>
+        <article class="mini">
+          <h3>使用进度</h3>
+          <p>存储配额 68%</p>
+          <div class="sp-8"></div>
+          <div class="progress"><span class="w-68"></span></div>
+          <div class="sp-10"></div>
+          <p>请求成功率 91%</p>
+          <div class="sp-8"></div>
+          <div class="progress"><span class="w-91"></span></div>
+        </article>
+        <article class="price featured">
+          <div class="label">推荐方案</div>
+          <div class="price-value">￥199/月</div>
+          <p>抬升价格卡：更强边框与柔和投影，仍保持单色强调。</p>
+          <div class="actions"><button class="btn btn-primary">立即开通</button></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="card section anchor-offset" id="sec-buttons">
+      <div class="eyebrow">Buttons</div>
+      <h2>按钮与图标状态</h2>
+      <div class="mini">
+        <div class="actions">
+          <button class="btn btn-primary">主按钮</button>
+          <button class="btn btn-secondary">次级按钮</button>
+          <button class="btn btn-outline">线条按钮</button>
+          <button class="btn btn-ghost">幽灵按钮</button>
+          <button class="btn btn-disabled" disabled>禁用按钮</button>
+          <button class="btn btn-link">文本链接</button>
+        </div>
+        <div class="actions align">
+          <button class="btn btn-primary btn-pill">胶囊</button>
+          <button class="btn btn-primary btn-sm">小号</button>
+          <button class="btn btn-primary">默认</button>
+          <button class="btn btn-primary btn-lg">大号</button>
+          <button class="btn btn-icon" aria-label="search"><i class="fa-solid fa-magnifying-glass"></i></button>
+          <button class="btn btn-icon" aria-label="more"><i class="fa-solid fa-ellipsis"></i></button>
+        </div>
+        <hr class="divider divider-md">
+        <div class="actions align">
+          <button class="btn btn-primary btn-icon-text btn-scene"><i class="fa-solid fa-paper-plane inline-icon"></i><span>立即发布</span></button>
+          <button class="btn btn-outline btn-icon-text btn-scene"><i class="fa-solid fa-download inline-icon"></i><span>导出资源</span></button>
+          <button class="btn btn-secondary btn-icon-text btn-scene"><i class="fa-regular fa-file-lines inline-icon"></i><span>查看文档</span></button>
+          <button class="btn btn-ghost btn-icon-text btn-scene"><i class="fa-solid fa-gear inline-icon"></i><span>高级设置</span></button>
+        </div>
+        <div class="actions align spaced">
+          <div class="icon-showcase">
+            <span class="icon-badge icon-solid-primary"><i class="fa-solid fa-lock"></i></span>
+            <span class="icon-badge icon-solid-primary"><i class="fa-solid fa-shield-halved"></i></span>
+            <span class="icon-badge icon-soft-primary"><i class="fa-solid fa-bolt"></i></span>
+            <span class="icon-badge icon-soft-primary"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+            <span class="icon-badge icon-outline"><i class="fa-regular fa-bell"></i></span>
+            <span class="icon-badge icon-outline"><i class="fa-regular fa-clock"></i></span>
+          </div>
+          <span class="badge badge-accent"><i class="fa-solid fa-shield-halved inline-icon"></i><span>亮色实底标签</span></span>
+          <span class="chip chip-icon chip-marked"><i class="fa-solid fa-bolt inline-icon"></i><span>图标文字标签</span></span>
+          <span class="chip chip-icon swatch-outline-muted"><i class="fa-regular fa-bell inline-icon"></i><span>灰色描边标签</span></span>
+          <span class="chip chip-icon"><i class="fa-solid fa-bolt inline-icon"></i><span>浅胶囊标签</span></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section anchor-offset" id="sec-typescale">
+      <div class="eyebrow">Type Scale</div>
+      <h2>字号层级</h2>
+      <div class="type-scale">
+        <div class="type-row">
+          <div class="type-key">展示</div>
+          <div class="type-display">敏捷的棕狐跃过山丘</div>
+          <div class="type-meta">Rajdhani</div>
+        </div>
+        <div class="type-row">
+          <div class="type-key">h1</div>
+          <div class="type-h1">一个主要章节标题</div>
+          <div class="type-meta">Rajdhani</div>
+        </div>
+        <div class="type-row">
+          <div class="type-key">正文</div>
+          <div class="type-body">正文承担了大部分信息表达 — 长文可读，小字号舒适，层级清晰有力。</div>
+          <div class="type-meta">PingFang</div>
+        </div>
+        <div class="type-row">
+          <div class="type-key">标签</div>
+          <div class="type-label">眉题 / 标签</div>
+          <div class="type-meta">Inter</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section anchor-offset" id="sec-utility">
+      <div class="eyebrow">Utility Blocks</div>
+      <h2>分割线、卡片变体与提示</h2>
+      <div class="grid-3">
+        <article class="mini">
+          <h3>Divider</h3>
+          <p>低对比 1px 分割线，弱化但仍可扫描。</p>
+          <hr class="divider">
+          <p>分割后内容更易扫描。</p>
+        </article>
+        <article class="mini card-flat">
+          <h3>Card Flat</h3>
+          <p>虚线弱边框平面卡，适合次级区块。</p>
+          <hr class="divider">
+          <p class="muted">常用于次级说明区。</p>
+        </article>
+        <article class="mini card-padless">
+          <div class="pad-18">
+            <h3>Card Padless</h3>
+            <p>用于头尾分区明显的卡片布局。</p>
+          </div>
+          <hr class="divider divider-tight">
+          <div class="pad-14-18 flex center between">
+            <span class="muted">提示信息</span>
+            <span class="tooltip" data-tip="暗底 Tooltip：抬升描边">?</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="card section anchor-offset" id="sec-tabs">
+      <div class="eyebrow">Tabs / Segments / Breadcrumb</div>
+      <h2>标签页、分段与面包屑</h2>
+      <div class="mini">
+        <div class="tabs">
+          <span class="tab tab-active">概览</span>
+          <span class="tab">分析</span>
+          <span class="tab">设置</span>
+          <span class="tab">账单</span>
+        </div>
+        <div class="sp-14"></div>
+        <div class="crumbs">
+          <span>工作区</span><span class="sep">/</span><span>项目</span><span class="sep">/</span><span class="crumb-active">North Region API</span>
+        </div>
+        <div class="sp-14"></div>
+        <div class="alert"><span><i class="fa-solid fa-circle-info"></i></span><span>你的 DESIGN.md 已可发布。<span class="accent link-underline">查看变更 →</span></span></div>
+        <div class="sp-10"></div>
+        <div class="alert alert-strong"><span><i class="fa-solid fa-circle-check"></i></span><span><b>成功。</b>已作为 v0.alpha 发布到目录。</span></div>
+      </div>
+    </section>
+
+    <section class="card section anchor-offset" id="sec-forms">
+      <div class="eyebrow">Forms</div>
+      <h2>表单、开关与步进器</h2>
+      <div class="grid-2">
+        <div>
+          <label class="label">邮箱</label>
+          <input class="input" value="team@vibepm.com">
+          <div class="sp-12"></div>
+          <label class="label">密码</label>
+          <input class="input" type="password" value="••••••••••">
+          <div class="sp-12"></div>
+          <label class="label">风格方案</label>
+          <select class="select">
+            <option>暗色 + 低饱和黑灰</option>
+            <option>更亮次级文本变体</option>
+          </select>
+          <div class="sp-12"></div>
+          <label class="label">年龄</label>
+          <div class="stepper stepper-field flex center"><button type="button">−</button><span>03</span><button type="button">+</button></div>
+          <div class="sp-12"></div>
+          <label class="label">个人简介</label>
+          <textarea class="textarea">专注于云平台控制台与开发者门户叙事。</textarea>
+        </div>
+        <div class="mini">
+          <div class="label">通知偏好</div>
+          <label class="check-row compact"><span class="checkbox checked">✓</span><span>每周摘要</span></label>
+          <label class="check-row compact"><span class="checkbox checked">✓</span><span>@提及</span></label>
+          <label class="check-row compact"><span class="checkbox"></span><span class="muted">产品发布</span></label>
+          <div class="sp-6"></div>
+          <div class="label">套餐</div>
+          <div class="option-card">
+            <span class="radio"></span>
+            <div><div class="option-title">入门版</div><div class="option-sub">永久免费</div></div>
+          </div>
+          <div class="option-card selected">
+            <span class="radio checked"></span>
+            <div><div class="option-title">专业版</div><div class="option-sub">$18 / 月</div></div>
+          </div>
+          <div class="option-card">
+            <span class="radio"></span>
+            <div><div class="option-title">团队版</div><div class="option-sub">$48 / 月</div></div>
+          </div>
+          <div class="label">开关</div>
+          <div class="switch-group">
+            <div class="check-row"><span>公开资料</span><span class="toggle toggle-on"></span></div>
+            <div class="check-row"><span>启用双重验证</span><span class="toggle toggle-on"></span></div>
+            <div class="check-row"><span class="muted">自动接受邀请</span><span class="toggle"></span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section anchor-offset" id="sec-data">
+      <div class="eyebrow">Data Table</div>
+      <h2>数据表格</h2>
+      <div class="table-toolbar">
+        <div>
+          <div class="fw-600">团队动态</div>
+          <div class="muted fs-12">2 分钟前更新</div>
+        </div>
+        <div class="toolbar-actions">
+          <input class="input input-sm" placeholder="搜索..." value="">
+          <button class="btn btn-secondary btn-sm">筛选</button>
+          <button class="btn btn-primary btn-sm">导出</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>成员</th><th>模块</th><th>进度</th><th>状态</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Lauren C.</td><td>Hero</td><td>78%</td><td><span class="badge badge-accent">已发布</span></td><td class="td-actions"><button class="btn btn-icon btn-icon-sm" aria-label="更多操作"><i class="fa-solid fa-ellipsis"></i></button></td></tr>
+            <tr><td>Haris W.</td><td>Forms</td><td>52%</td><td><span class="badge">审核中</span></td><td class="td-actions"><button class="btn btn-icon btn-icon-sm" aria-label="更多操作"><i class="fa-solid fa-ellipsis"></i></button></td></tr>
+            <tr><td>Nadia O.</td><td>Pricing</td><td>24%</td><td><span class="badge badge-outline">草稿</span></td><td class="td-actions"><button class="btn btn-icon btn-icon-sm" aria-label="更多操作"><i class="fa-solid fa-ellipsis"></i></button></td></tr>
+            <tr><td>Ryo K.</td><td>Table</td><td>91%</td><td><span class="badge badge-accent">已发布</span></td><td class="td-actions"><button class="btn btn-icon btn-icon-sm" aria-label="更多操作"><i class="fa-solid fa-ellipsis"></i></button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="footer">
+      Copyright © 2026 <a href="https://ai.axureux.com" target="_blank" rel="noopener noreferrer">ai.axureux.com</a> VibePM - All rights reserved
+    </footer>
+  </main>
+  <script>
+    (function () {
+      var toggle = document.getElementById("readabilityToggle");
+      if (!toggle) return;
+      toggle.addEventListener("click", function () {
+        var enabled = document.body.classList.toggle("mode-readable");
+        toggle.setAttribute("aria-pressed", enabled ? "true" : "false");
+        toggle.textContent = enabled ? "提亮次级" : "标准对比";
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<svg viewBox="0 0 680 360" width="100%" role="img">
+  <title>上下文管理三招治本手段</title>
+  <desc>对比反模式：所有内容塞进一个窗口；正解：文件落盘、规范分层、子代理隔离三种手段向精简的主上下文供给内容。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <text class="th" x="40" y="30">上下文管理的三招治本手段</text>
+  <text class="ts" x="40" y="50">反模式 vs 正解：把记忆从易失 RAM 搬到磁盘与分层文件</text>
+
+  <g class="c-red">
+    <rect x="40" y="74" width="270" height="132" rx="12" fill="#FCEBEB" stroke="#A32D2D" stroke-width="0.5"/>
+    <text class="th" x="56" y="100" fill="#A32D2D">反模式 · 一个窗口装全部</text>
+    <text class="ts" x="56" y="126">• 系统提示 + 全量历史</text>
+    <text class="ts" x="56" y="148">• 整页文件 / 全部模块代码</text>
+    <text class="ts" x="56" y="170">• 工具输出、构建日志</text>
+    <text class="ts" x="56" y="194" fill="#A32D2D">→ 越堆越满，中段遗忘、每轮重复计费</text>
+  </g>
+
+  <g class="c-blue">
+    <rect x="400" y="74" width="240" height="72" rx="12" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+    <text class="th" x="416" y="102" fill="#0C447C">主上下文 (RAM)</text>
+    <text class="ts" x="416" y="126">只装当前任务的精简切片</text>
+  </g>
+
+  <g class="c-blue">
+    <rect x="40" y="210" width="180" height="130" rx="12" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+    <text class="th" x="56" y="236" fill="#0C447C">① 文件落盘</text>
+    <text class="ts" x="56" y="262">规范 / 踩坑 / 进度 / 决策</text>
+    <text class="ts" x="56" y="282">写进 .md 文件</text>
+    <text class="ts" x="56" y="302">用时才读回窗口</text>
+    <text class="ts" x="56" y="324" fill="#185FA5">（你的 .style/ 已是）</text>
+  </g>
+
+  <g class="c-blue">
+    <rect x="250" y="210" width="180" height="130" rx="12" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+    <text class="th" x="266" y="236" fill="#0C447C">② 规范分层</text>
+    <text class="ts" x="266" y="262">AGENTS.md 管治理</text>
+    <text class="ts" x="266" y="282">→ requirements 目标</text>
+    <text class="ts" x="266" y="302">→ plan / tasks 架构</text>
+    <text class="ts" x="266" y="324">分层按需加载</text>
+  </g>
+
+  <g class="c-blue">
+    <rect x="460" y="210" width="180" height="130" rx="12" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+    <text class="th" x="476" y="236" fill="#0C447C">③ 子代理隔离</text>
+    <text class="ts" x="476" y="262">探索 / 测试 / 检索</text>
+    <text class="ts" x="476" y="282">独立窗口里跑</text>
+    <text class="ts" x="476" y="302">只回传紧凑摘要</text>
+    <text class="ts" x="476" y="324">过程即弃，不污染主窗</text>
+  </g>
+
+  <polyline points="130,210 130,165 445,165 445,150" fill="none" stroke="#185FA5" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <polyline points="340,210 340,178 520,178 520,150" fill="none" stroke="#185FA5" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <polyline points="550,210 550,192 595,192 595,150" fill="none" stroke="#185FA5" stroke-width="1.5" marker-end="url(#arrow)"/>
+</svg>
